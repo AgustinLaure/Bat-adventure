@@ -7,8 +7,9 @@ namespace obstacle
 	{
 		int textureID;
 
-		Vector2 position;
-
+		Vector2 top;
+		Vector2 bottom;
+		
 		float velocity;
 
 		float width;

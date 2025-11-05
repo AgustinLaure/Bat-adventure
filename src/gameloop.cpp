@@ -271,8 +271,8 @@ bool game::CheckCollisions(player::Bird bird, obstacle::Obstacle obstacle)
 	float circleX = bird.position.x;
 	float circleY = bird.position.y;
 
-	float rectX = obstacle.position.x;
-	float rectY = obstacle.position.y;
+	float rectX = obstacle.bottom.x;
+	float rectY = obstacle.bottom.y;
 	float rectWidth = obstacle.width;
 	float rectHeight = obstacle.height;
 
