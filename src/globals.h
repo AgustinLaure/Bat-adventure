@@ -6,6 +6,8 @@ namespace externs
 
 	extern int screenWidth;
 	extern int screenHeight;
+
+	extern bool retry;
 }
 
 namespace globals

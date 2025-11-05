@@ -75,7 +75,9 @@ namespace text
 
 void game::GameLoop()
 {
-	game::Initialize(objects::bird, objects::obstacle, objects::play, objects::credits, objects::exit);
+	InitWindow(externs::screenWidth, externs::screenHeight, "Flappy Bird");
+
+ 	game::Initialize(objects::bird, objects::obstacle, objects::play, objects::credits, objects::exit);
 
 	while (!WindowShouldClose() && game::gameState != game::state::State::Exit)
 	{
@@ -85,6 +87,11 @@ void game::GameLoop()
 
 			game::menu::Update(objects::play, objects::credits, objects::exit, objects::cursor, game::gameState);
 
+			if (externs::retry)
+			{
+				game::Initialize(objects::bird, objects::obstacle, objects::play, objects::credits, objects::exit);
+				externs::retry = false;
+			}
 			break;
 
 		case game::state::State::Play:
@@ -123,18 +130,10 @@ void game::GameLoop()
 
 			game::credits::Draw(objects::exit);
 
-
 			break;
 		default:
 			break;
 		}
-		DrawCircleV({ objects::cursor.positionX, objects::cursor.positionY },15,RED);
-
-		Rectangle playButt = { objects::play.position.x - objects::play.width / 2, objects::play.position.y - objects::play.height / 2, objects::play.width, objects::play.height };
-		Rectangle creditsButt = { objects::credits.position.x - objects::credits.width / 2, objects::credits.position.y - objects::credits.height / 2, objects::credits.width, objects::credits.height };
-
-		DrawRectangleRec(playButt,MAGENTA);
-		DrawRectangleRec(creditsButt,GOLD);
 
 		EndDrawing();
 	}
@@ -149,8 +148,6 @@ void essentials::GetDeltaTime()
 
 void game::Initialize(player::Bird& bird, obstacle::Obstacle& obstacle, buttons::Button& play, buttons::Button& credits, buttons::Button& exit)
 {
-	InitWindow(externs::screenWidth, externs::screenHeight, "Flappy Bird");
-
 	float buttonWidth = 25.0f;
 	float buttonHeight = 8.0f;
 	float buttonCenterX = 50.0f;
@@ -183,13 +180,13 @@ void game::Update()
 		objects::obstacle.bottom.y, objects::obstacle.width, objects::obstacle.height) || game::CheckCollisionsCircleRectangle
 		(objects::bird.position.x, objects::bird.position.y, objects::obstacle.top.x, objects::obstacle.top.y, objects::obstacle.width, objects::obstacle.height))
 	{
-		CloseWindow();
+		game::gameState = game::state::State::Menu;
+		externs::retry = true;
 	}
 }
 
 void game::Draw()
 {
-	game::DrawCurrentVer();
 	player::Draw(objects::bird);
 	obstacle::Draw(objects::obstacle);
 }
@@ -251,20 +248,42 @@ void game::menu::Draw(buttons::Button play, buttons::Button credits, buttons::Bu
 	buttons::Draw(play);
 	buttons::Draw(credits);
 	buttons::Draw(exit);
+
+	game::DrawCurrentVer();
 }
 
 void game::credits::Update(state::State& currentState, objects::Cursor& cursor, buttons::Button& returnButton)
 {
 	objects::UpdateMousePosition(cursor);
-	returnButton.height = 0;
 
-	currentState = game::state::State::EndScreen;
+	Rectangle exitButt = { returnButton.position.x - returnButton.width / 2, returnButton.position.y - returnButton.height / 2, returnButton.width, returnButton.height };
 
+	if (CheckCollisionPointRec({ cursor.positionX, cursor.positionY }, exitButt))
+	{
+		returnButton.text.color = WHITE;
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+		{
+			currentState = state::State::Menu;
+		}
+	}
+	else
+	{
+		returnButton.text.color = GRAY;
+	}
 }
 
 void game::credits::Draw(buttons::Button& returnButton)
 {
+	text::Text credits;
+	credits.text = "Made by Eluney Jazmin Mousseigne";
+	credits.posX = 50;
+	credits.posY = 35;
+	credits.fonstSize = 50;
+	credits.color = BLACK;
+
+	draw::DrawText(credits);
 	buttons::Draw(returnButton);
+	game::DrawCurrentVer();
 }
 
 bool game::CheckCollisionsCircleRectangle(float circleX, float circleY, float recX, float recY, float width, float height)
@@ -288,7 +307,7 @@ bool game::CheckCollisionsCircleRectangle(float circleX, float circleY, float re
 
 void game::DrawCurrentVer()
 {
-	text::version.text = "ver 0.1";
+	text::version.text = "ver 0.2";
 	text::version.posX = 95.0f;
 	text::version.posY = 98.0f;
 	text::version.color = BLACK;
