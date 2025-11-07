@@ -48,7 +48,7 @@ namespace game
 	}
 	state::State gameState = state::State::Menu;
 
-	void Initialize(player::Bird& bird, obstacle::Obstacle& obstacle, buttons::Button& credits, buttons::Button& play, buttons::Button& exit);
+	void Initialize(buttons::Button& credits, buttons::Button& play, buttons::Button& exit, Texture& tempTexture, int& backgroundFrontTextureID, int& backgroundMiddleTextureID, int& backgroundBackTextureID);
 	void Update();
 	void Draw();
 
@@ -68,16 +68,30 @@ namespace game
 	}
 }
 
-namespace text
+namespace assets
 {
 	static text::Text version;
+	static Texture tempTexture;
+
+	namespace parallax
+	{
+		static float scrollingBack = 0.0f;
+		static float scrollingMid = 0.0f;
+		static float scrollingFront = 0.0f;
+
+		void Update();
+		void Draw();
+	}
 }
 
 void game::GameLoop()
 {
 	InitWindow(externs::screenWidth, externs::screenHeight, "Flappy Bird");
 
- 	game::Initialize(objects::bird, objects::obstacle, objects::play, objects::credits, objects::exit);
+	game::Initialize(objects::play, objects::credits, objects::exit, assets::tempTexture,
+		externs::backgroundFrontTextureID, externs::backgroundMiddleTextureID, externs::backgroundBackTextureID);
+	player::Initialization(objects::bird);
+	obstacle::Initialization(objects::obstacle);
 
 	while (!WindowShouldClose() && game::gameState != game::state::State::Exit)
 	{
@@ -89,7 +103,9 @@ void game::GameLoop()
 
 			if (externs::retry)
 			{
-				game::Initialize(objects::bird, objects::obstacle, objects::play, objects::credits, objects::exit);
+				player::Initialization(objects::bird);
+				obstacle::Initialization(objects::obstacle);
+
 				externs::retry = false;
 			}
 			break;
@@ -146,7 +162,7 @@ void essentials::GetDeltaTime()
 	externs::deltaT = GetFrameTime();
 }
 
-void game::Initialize(player::Bird& bird, obstacle::Obstacle& obstacle, buttons::Button& play, buttons::Button& credits, buttons::Button& exit)
+void game::Initialize(buttons::Button& play, buttons::Button& credits, buttons::Button& exit, Texture& tempTexture, int& backgroundFrontTextureID, int& backgroundMiddleTextureID, int& backgroundBackTextureID)
 {
 	float buttonWidth = 25.0f;
 	float buttonHeight = 8.0f;
@@ -164,13 +180,21 @@ void game::Initialize(player::Bird& bird, obstacle::Obstacle& obstacle, buttons:
 	exit.text.text = "EXIT";
 	buttons::Initialize(exit, buttonWidth, buttonHeight, buttonCenterX, 75.0f);
 
-	player::Initialization(bird);
-	obstacle::Initialization(obstacle);
+	tempTexture = LoadTexture(externs::backgroundFrontTexture.c_str());
+	backgroundFrontTextureID = tempTexture.id;
+
+	tempTexture = LoadTexture(externs::backgroundMiddleTexture.c_str());
+	backgroundMiddleTextureID = tempTexture.id;
+
+	tempTexture = LoadTexture(externs::backgroundBackTexture.c_str());
+	backgroundBackTextureID = tempTexture.id;
 
 }
 
 void game::Update()
 {
+	assets::parallax::Update();
+
 	essentials::GetDeltaTime();
 
 	player::Update(objects::bird);
@@ -187,6 +211,8 @@ void game::Update()
 
 void game::Draw()
 {
+	assets::parallax::Draw();
+
 	player::Draw(objects::bird);
 	obstacle::Draw(objects::obstacle);
 }
@@ -307,12 +333,12 @@ bool game::CheckCollisionsCircleRectangle(float circleX, float circleY, float re
 
 void game::DrawCurrentVer()
 {
-	text::version.text = "ver 0.2";
-	text::version.posX = 95.0f;
-	text::version.posY = 98.0f;
-	text::version.color = BLACK;
+	assets::version.text = "ver 0.3";
+	assets::version.posX = 95.0f;
+	assets::version.posY = 98.0f;
+	assets::version.color = BLACK;
 
-	draw::DrawText(text::version);
+	draw::DrawText(assets::version);
 }
 
 void objects::UpdateMousePosition(Cursor& cursorParam)
@@ -320,3 +346,35 @@ void objects::UpdateMousePosition(Cursor& cursorParam)
 	cursorParam.positionX = utils::PixelsToPercentX(GetMousePosition().x);
 	cursorParam.positionY = utils::PixelsToPercentY(GetMousePosition().y);
 };
+
+void assets::parallax::Update()
+{
+	scrollingBack -= 1.0f * externs::deltaT;
+	scrollingMid -= 2.0f * externs::deltaT;
+	scrollingFront -= 4.0f * externs::deltaT;
+
+	if (scrollingBack <= -200.0f)
+	{
+		scrollingBack = 0;
+	}
+	if (scrollingMid <= -200.0f)
+	{
+		scrollingMid = 0;
+	}
+	if (scrollingFront <= -200.0f)
+	{
+		scrollingFront = 0;
+	}
+}
+
+void assets::parallax::Draw()
+{
+	draw::DrawSpriteEx(static_cast<float>(externs::backgroundBackTextureID), scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+	draw::DrawSpriteEx(static_cast<float>(externs::backgroundBackTextureID), 200.0f + scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+
+	draw::DrawSpriteEx(static_cast<float>(externs::backgroundMiddleTextureID), scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+	draw::DrawSpriteEx(static_cast<float>(externs::backgroundMiddleTextureID), 200.0f + scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+
+	draw::DrawSpriteEx(static_cast<float>(externs::backgroundFrontTextureID), scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+	draw::DrawSpriteEx(static_cast<float>(externs::backgroundFrontTextureID), 200.0f + scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+}

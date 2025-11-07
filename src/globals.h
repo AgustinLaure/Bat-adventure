@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace externs
 {
@@ -8,6 +9,15 @@ namespace externs
 	extern int screenHeight;
 
 	extern bool retry;
+
+	extern std::string backgroundFrontTexture;
+	extern int backgroundFrontTextureID;
+
+	extern std::string backgroundMiddleTexture;
+	extern int backgroundMiddleTextureID;
+
+	extern std::string backgroundBackTexture;
+	extern int backgroundBackTextureID;
 }
 
 namespace globals
