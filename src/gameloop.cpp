@@ -440,14 +440,30 @@ void game::credits::Update(state::State& currentState, objects::Cursor& cursor, 
 
 void game::credits::Draw(buttons::Button& returnButton)
 {
-	text::Text credits;
-	credits.text = "Made by Eluney Jazmin Mousseigne";
-	credits.posX = 50;
-	credits.posY = 35;
-	credits.fonstSize = 50;
-	credits.color = BLACK;
+	text::Text credits1;
+	credits1.text = "Made by Eluney Jazmin Mousseigne";
+	credits1.posX = 50;
+	credits1.posY = 20;
+	credits1.fonstSize = 40;
+	credits1.color = BLACK;
 
-	draw::DrawText(credits);
+	text::Text credits2;
+	credits2.text = "&";
+	credits2.posX = 50;
+	credits2.posY = 30;
+	credits2.fonstSize = 40;
+	credits2.color = BLACK;
+
+	text::Text credits3;
+	credits3.text = "Agustin Ezequiel Laure";
+	credits3.posX = 50;
+	credits3.posY = 40;
+	credits3.fonstSize = 40;
+	credits3.color = BLACK;
+
+	draw::DrawText(credits1);
+	draw::DrawText(credits2);
+	draw::DrawText(credits3);
 	buttons::Draw(returnButton);
 	game::DrawCurrentVer();
 }
