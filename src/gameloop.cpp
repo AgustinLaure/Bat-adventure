@@ -27,13 +27,15 @@ namespace objects
 
 	static Cursor cursor;
 
-	static buttons::Button play;
+	static buttons::Button singleplayer;
+	static buttons::Button multiplayer;
 	static buttons::Button credits;
 	static buttons::Button exit;
 
 	static void UpdateMousePosition(Cursor& cursor);
 
-	static player::Bird bird;
+	static player::Bird bird1;
+	static player::Bird bird2;
 	static obstacle::Obstacle obstacle;
 }
 
@@ -45,20 +47,26 @@ namespace game
 		{
 			Menu, Play, Credits, Pause, HowToPlay, EndScreen, Settings, Exit
 		};
+
+		enum class PlayStyle
+		{
+			Singleplayer, Multiplayer
+		};
 	}
 	state::State gameState = state::State::Menu;
+	state::PlayStyle playStyle = state::PlayStyle::Singleplayer;
 
-	static void Initialize(buttons::Button& credits, buttons::Button& play, buttons::Button& exit, Texture& tempTexture, int& backgroundFrontTextureID, int& backgroundMiddleTextureID, int& backgroundBackTextureID);
-	static void Update();
-	static void Draw();
+	static void Initialize(buttons::Button& singleplayer, buttons::Button& multiplayer, buttons::Button& credits, buttons::Button& exit, Texture& tempTexture, int& backgroundFrontTextureID, int& backgroundMiddleTextureID, int& backgroundBackTextureID);
+	static void Update(state::PlayStyle currentPlayStyle);
+	static void Draw(state::PlayStyle currentPlayStyle);
 
 	static bool CheckCollisionsCircleRectangle(float circleX, float circleY, float recX, float recY, float width, float height);
 	static void DrawCurrentVer();
 
 	namespace menu
 	{
-		static void Update(buttons::Button& play, buttons::Button& credits, buttons::Button& exit, objects::Cursor& cursor, state::State& currentState);
-		static void Draw(buttons::Button play, buttons::Button credits, buttons::Button exit);
+		static void Update(buttons::Button& singleplayer, buttons::Button& multiplayer, buttons::Button& credits, buttons::Button& exit, objects::Cursor& cursor, state::State& currentState, state::PlayStyle& currentPlayStyle);
+		static void Draw(buttons::Button singeplayer, buttons::Button multiplayer, buttons::Button credits, buttons::Button exit);
 	}
 
 	namespace credits
@@ -88,9 +96,10 @@ void game::GameLoop()
 {
 	InitWindow(externs::screenWidth, externs::screenHeight, "Flappy Bird");
 
-	game::Initialize(objects::play, objects::credits, objects::exit, assets::tempTexture,
+	game::Initialize(objects::singleplayer, objects::multiplayer, objects::credits, objects::exit, assets::tempTexture,
 		externs::backgroundFrontTextureID, externs::backgroundMiddleTextureID, externs::backgroundBackTextureID);
-	player::Initialization(objects::bird);
+	player::Initialization(objects::bird1, KEY_W, { static_cast<float>(externs::screenWidth) / 6.0f, static_cast<float>(externs::screenHeight) / 2.0f });
+	player::Initialization(objects::bird2, KEY_UP, { static_cast<float>(externs::screenWidth) / 5.0f, static_cast<float>(externs::screenHeight) / 2.0f });
 	obstacle::Initialization(objects::obstacle);
 
 	while (!WindowShouldClose() && game::gameState != game::state::State::Exit)
@@ -99,11 +108,12 @@ void game::GameLoop()
 		{
 		case game::state::State::Menu:
 
-			game::menu::Update(objects::play, objects::credits, objects::exit, objects::cursor, game::gameState);
+			game::menu::Update(objects::singleplayer, objects::multiplayer, objects::credits, objects::exit, objects::cursor, game::gameState, game::playStyle);
 
 			if (externs::retry)
 			{
-				player::Initialization(objects::bird);
+				player::Initialization(objects::bird1, KEY_W, { static_cast<float>(externs::screenWidth) / 6.0f, static_cast<float>(externs::screenHeight) / 2.0f });
+				player::Initialization(objects::bird2, KEY_UP, { static_cast<float>(externs::screenWidth) / 5.0f, static_cast<float>(externs::screenHeight) / 2.0f });
 				obstacle::Initialization(objects::obstacle);
 
 				externs::retry = false;
@@ -112,7 +122,7 @@ void game::GameLoop()
 
 		case game::state::State::Play:
 
-			game::Update();
+			game::Update(game::playStyle);
 
 			break;
 
@@ -132,13 +142,13 @@ void game::GameLoop()
 		{
 		case game::state::State::Menu:
 
-			game::menu::Draw(objects::play, objects::credits, objects::exit);
+			game::menu::Draw(objects::singleplayer, objects::multiplayer, objects::credits, objects::exit);
 
 			break;
 
 		case game::state::State::Play:
 
-			game::Draw();
+			game::Draw(game::playStyle);
 
 			break;
 
@@ -162,23 +172,26 @@ void essentials::GetDeltaTime()
 	externs::deltaT = GetFrameTime();
 }
 
-void game::Initialize(buttons::Button& play, buttons::Button& credits, buttons::Button& exit, Texture& tempTexture, int& backgroundFrontTextureID, int& backgroundMiddleTextureID, int& backgroundBackTextureID)
+void game::Initialize(buttons::Button& singleplayer, buttons::Button& multiplayer, buttons::Button& credits, buttons::Button& exit, Texture& tempTexture, int& backgroundFrontTextureID, int& backgroundMiddleTextureID, int& backgroundBackTextureID)
 {
 	float buttonWidth = 25.0f;
 	float buttonHeight = 8.0f;
 	float buttonCenterX = 50.0f;
 
 	//play.text.font = externs::defaultText.font;
-	play.text.text = "PLAY";
-	buttons::Initialize(play, buttonWidth, buttonHeight, buttonCenterX, 35.0f);
+	singleplayer.text.text = "SINGLEPLAYER";
+	buttons::Initialize(singleplayer, buttonWidth, buttonHeight, buttonCenterX, 25.0f);
+
+	multiplayer.text.text = "MULTIPLAYER";
+	buttons::Initialize(multiplayer, buttonWidth, buttonHeight, buttonCenterX, 35.0f);
 
 	//credits.text.font = externs::defaultText.font;
 	credits.text.text = "CREDITS";
-	buttons::Initialize(credits, buttonWidth, buttonHeight, buttonCenterX, 50.0f);
+	buttons::Initialize(credits, buttonWidth, buttonHeight, buttonCenterX, 45.0f);
 
 	//exit.text.font = externs::defaultText.font;
 	exit.text.text = "EXIT";
-	buttons::Initialize(exit, buttonWidth, buttonHeight, buttonCenterX, 75.0f);
+	buttons::Initialize(exit, buttonWidth, buttonHeight, buttonCenterX, 55.0f);
 
 	tempTexture = LoadTexture(externs::backgroundFrontTexture.c_str());
 	backgroundFrontTextureID = tempTexture.id;
@@ -191,21 +204,62 @@ void game::Initialize(buttons::Button& play, buttons::Button& credits, buttons::
 
 }
 
-void game::Update()
+void game::Update(state::PlayStyle currentPlayStyle)
 {
 	assets::parallax::Update();
 
 	essentials::GetDeltaTime();
 
-	player::Update(objects::bird);
+	if (objects::bird1.isOn)
+	{
+		player::Update(objects::bird1);
+	}
+
+	if (currentPlayStyle == state::PlayStyle::Multiplayer)
+	{
+		if (objects::bird2.isOn)
+		{
+			player::Update(objects::bird2);
+		}
+	}
+
 	obstacle::Update(objects::obstacle);
 
-	if (game::CheckCollisionsCircleRectangle(objects::bird.position.x, objects::bird.position.y, objects::obstacle.bottom.x,
-		objects::obstacle.bottom.y, objects::obstacle.width, objects::obstacle.height) || game::CheckCollisionsCircleRectangle
-		(objects::bird.position.x, objects::bird.position.y, objects::obstacle.top.x, objects::obstacle.top.y, objects::obstacle.width, objects::obstacle.height))
+	if (objects::bird1.isOn)
 	{
-		game::gameState = game::state::State::Menu;
-		externs::retry = true;
+		if (game::CheckCollisionsCircleRectangle(objects::bird1.position.x, objects::bird1.position.y, objects::obstacle.bottom.x,
+			objects::obstacle.bottom.y, objects::obstacle.width, objects::obstacle.height) || game::CheckCollisionsCircleRectangle
+			(objects::bird1.position.x, objects::bird1.position.y, objects::obstacle.top.x, objects::obstacle.top.y, objects::obstacle.width, objects::obstacle.height))
+		{
+			objects::bird1.isOn = false;
+			externs::retry = true;
+		}
+	}
+
+	if (objects::bird2.isOn)
+	{
+		if (game::CheckCollisionsCircleRectangle(objects::bird2.position.x, objects::bird2.position.y, objects::obstacle.bottom.x,
+			objects::obstacle.bottom.y, objects::obstacle.width, objects::obstacle.height) || game::CheckCollisionsCircleRectangle
+			(objects::bird2.position.x, objects::bird2.position.y, objects::obstacle.top.x, objects::obstacle.top.y, objects::obstacle.width, objects::obstacle.height))
+		{
+			objects::bird2.isOn = false;
+			externs::retry = true;
+		}
+	}
+
+	if (!objects::bird1.isOn)
+	{
+		if (currentPlayStyle == state::PlayStyle::Multiplayer)
+		{
+			if (!objects::bird2.isOn)
+			{
+				externs::hasLost = true;
+			}
+		}
+		else
+		{
+			externs::hasLost = true;
+		}
 	}
 
 	if (externs::hasLost)
@@ -216,32 +270,62 @@ void game::Update()
 	}
 }
 
-void game::Draw()
+void game::Draw(state::PlayStyle currentPlayStyle)
 {
 	assets::parallax::Draw();
 
-	player::Draw(objects::bird);
+	if (objects::bird1.isOn)
+	{
+		player::Draw(objects::bird1);
+	}
+
+	if (currentPlayStyle == game::state::PlayStyle::Multiplayer)
+	{
+		if (objects::bird2.isOn)
+		{
+			player::Draw(objects::bird2);
+		}
+	}
+
 	obstacle::Draw(objects::obstacle);
 }
 
-void game::menu::Update(buttons::Button& play, buttons::Button& credits, buttons::Button& exit, objects::Cursor& cursor, state::State& currentState)
+void game::menu::Update(buttons::Button& singleplayer, buttons::Button& multiplayer, buttons::Button& credits, buttons::Button& exit, objects::Cursor& cursor, state::State& currentState, state::PlayStyle& currentPlayStyle)
 {
 	objects::UpdateMousePosition(cursor);
 
-	Rectangle playButt = { play.position.x - play.width / 2, play.position.y - play.height / 2, play.width, play.height };
+	Rectangle singleplayerButt = { singleplayer.position.x - singleplayer.width / 2, singleplayer.position.y - singleplayer.height / 2, singleplayer.width, singleplayer.height };
 
-	if (CheckCollisionPointRec({ cursor.positionX, cursor.positionY }, playButt))
+	if (CheckCollisionPointRec({ cursor.positionX, cursor.positionY }, singleplayerButt))
 	{
-		play.text.color = WHITE;
+		singleplayer.text.color = WHITE;
 
 		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 		{
 			currentState = state::State::Play;
+			currentPlayStyle = state::PlayStyle::Singleplayer;
 		}
 	}
 	else
 	{
-		play.text.color = GRAY;
+		singleplayer.text.color = GRAY;
+	}
+
+	Rectangle multiplayerButt = { multiplayer.position.x - multiplayer.width / 2, multiplayer.position.y - multiplayer.height / 2, multiplayer.width, multiplayer.height };
+
+	if (CheckCollisionPointRec({ cursor.positionX, cursor.positionY }, multiplayerButt))
+	{
+		multiplayer.text.color = WHITE;
+
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+		{
+			currentState = state::State::Play;
+			currentPlayStyle = state::PlayStyle::Multiplayer;
+		}
+	}
+	else
+	{
+		multiplayer.text.color = GRAY;
 	}
 
 	Rectangle creditsButt = { credits.position.x - credits.width / 2, credits.position.y - credits.height / 2, credits.width, credits.height };
@@ -276,9 +360,10 @@ void game::menu::Update(buttons::Button& play, buttons::Button& credits, buttons
 	}
 }
 
-void game::menu::Draw(buttons::Button play, buttons::Button credits, buttons::Button exit)
+void game::menu::Draw(buttons::Button singeplayer, buttons::Button multiplayer, buttons::Button credits, buttons::Button exit)
 {
-	buttons::Draw(play);
+	buttons::Draw(singeplayer);
+	buttons::Draw(multiplayer);
 	buttons::Draw(credits);
 	buttons::Draw(exit);
 

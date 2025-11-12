@@ -8,20 +8,24 @@ namespace variables
 	static float velocity = 500.0f;
 }
 
-void player::Initialization(Bird& bird)
+void player::Initialization(Bird& bird, KeyboardKey moveUpKey, Vector2 pos)
 {
 	bird.textureID = 0;
 
-	bird.position = { static_cast<float>(externs::screenWidth) / 6.0f, static_cast<float>(externs::screenHeight) / 2.0f };
+	bird.position = pos;
 
 	bird.velocity = 0.0f;
+
+	bird.isOn = true;
+
+	bird.moveUpKey = moveUpKey;
 }
 
 void player::Update(Bird& bird)
 {
 	bird.velocity -= globals::acceleration * externs::deltaT;
 
-	if (player::IsPlayerMoving())
+	if (player::IsPlayerMoving(bird.moveUpKey))
 	{
 		bird.velocity = variables::velocity;
 	}
@@ -36,9 +40,9 @@ void player::Draw(Bird bird)
 	DrawCircleV(bird.position, 30.0f, BLUE);
 }
 
-bool player::IsPlayerMoving()
+bool player::IsPlayerMoving(KeyboardKey moveUpKey)
 {
-	return IsKeyPressed(KEY_UP);
+	return IsKeyPressed(moveUpKey);
 }
 
 bool player::HasLost(Bird bird)
@@ -55,7 +59,7 @@ void player::CheckState(Bird& bird)
 {
 	if (HasLost(bird))
 	{
-		externs::hasLost = true;
+		bird.isOn = false;
 	}
 	if (IsTouchingCeiling(bird))
 	{

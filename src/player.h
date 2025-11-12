@@ -10,13 +10,17 @@ namespace player
 		Vector2 position;
 
 		float velocity;
+
+		bool isOn;
+
+		KeyboardKey moveUpKey;
 	};
 
-	void Initialization(Bird& bird);
+	void Initialization(Bird& bird, KeyboardKey moveUpKey, Vector2 pos);
 	void Update(Bird& bird);
 	void Draw(Bird bird);
 
-	bool IsPlayerMoving();
+	bool IsPlayerMoving(KeyboardKey moveUpKey);
 
 	bool IsTouchingCeiling(Bird bird);
 	bool HasLost(Bird bird);
