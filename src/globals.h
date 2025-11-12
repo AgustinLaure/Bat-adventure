@@ -10,6 +10,7 @@ namespace externs
 
 	extern bool retry;
 	extern bool hasLost;
+	extern bool hasReadRules;
 
 	extern std::string backgroundFrontTexture;
 	extern int backgroundFrontTextureID;

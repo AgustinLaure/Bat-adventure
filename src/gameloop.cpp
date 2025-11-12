@@ -206,88 +206,123 @@ void game::Initialize(buttons::Button& singleplayer, buttons::Button& multiplaye
 
 void game::Update(state::PlayStyle currentPlayStyle)
 {
-	assets::parallax::Update();
-
-	essentials::GetDeltaTime();
-
-	if (objects::bird1.isOn)
+	if (!externs::hasReadRules)
 	{
-		player::Update(objects::bird1);
-	}
-
-	if (currentPlayStyle == state::PlayStyle::Multiplayer)
-	{
-		if (objects::bird2.isOn)
+		if (IsKeyPressed(KEY_ENTER))
 		{
-			player::Update(objects::bird2);
+			externs::hasReadRules = true;
 		}
 	}
-
-	obstacle::Update(objects::obstacle);
-
-	if (objects::bird1.isOn)
+	else
 	{
-		if (game::CheckCollisionsCircleRectangle(objects::bird1.position.x, objects::bird1.position.y, objects::obstacle.bottom.x,
-			objects::obstacle.bottom.y, objects::obstacle.width, objects::obstacle.height) || game::CheckCollisionsCircleRectangle
-			(objects::bird1.position.x, objects::bird1.position.y, objects::obstacle.top.x, objects::obstacle.top.y, objects::obstacle.width, objects::obstacle.height))
+		assets::parallax::Update();
+
+		essentials::GetDeltaTime();
+
+		if (objects::bird1.isOn)
 		{
-			objects::bird1.isOn = false;
-			externs::retry = true;
+			player::Update(objects::bird1);
 		}
-	}
 
-	if (objects::bird2.isOn)
-	{
-		if (game::CheckCollisionsCircleRectangle(objects::bird2.position.x, objects::bird2.position.y, objects::obstacle.bottom.x,
-			objects::obstacle.bottom.y, objects::obstacle.width, objects::obstacle.height) || game::CheckCollisionsCircleRectangle
-			(objects::bird2.position.x, objects::bird2.position.y, objects::obstacle.top.x, objects::obstacle.top.y, objects::obstacle.width, objects::obstacle.height))
-		{
-			objects::bird2.isOn = false;
-			externs::retry = true;
-		}
-	}
-
-	if (!objects::bird1.isOn)
-	{
 		if (currentPlayStyle == state::PlayStyle::Multiplayer)
 		{
-			if (!objects::bird2.isOn)
+			if (objects::bird2.isOn)
+			{
+				player::Update(objects::bird2);
+			}
+		}
+
+		obstacle::Update(objects::obstacle);
+
+		if (objects::bird1.isOn)
+		{
+			if (game::CheckCollisionsCircleRectangle(objects::bird1.position.x, objects::bird1.position.y, objects::obstacle.bottom.x,
+				objects::obstacle.bottom.y, objects::obstacle.width, objects::obstacle.height) || game::CheckCollisionsCircleRectangle
+				(objects::bird1.position.x, objects::bird1.position.y, objects::obstacle.top.x, objects::obstacle.top.y, objects::obstacle.width, objects::obstacle.height))
+			{
+				objects::bird1.isOn = false;
+				externs::retry = true;
+			}
+		}
+
+		if (objects::bird2.isOn)
+		{
+			if (game::CheckCollisionsCircleRectangle(objects::bird2.position.x, objects::bird2.position.y, objects::obstacle.bottom.x,
+				objects::obstacle.bottom.y, objects::obstacle.width, objects::obstacle.height) || game::CheckCollisionsCircleRectangle
+				(objects::bird2.position.x, objects::bird2.position.y, objects::obstacle.top.x, objects::obstacle.top.y, objects::obstacle.width, objects::obstacle.height))
+			{
+				objects::bird2.isOn = false;
+				externs::retry = true;
+			}
+		}
+
+		if (!objects::bird1.isOn)
+		{
+			if (currentPlayStyle == state::PlayStyle::Multiplayer)
+			{
+				if (!objects::bird2.isOn)
+				{
+					externs::hasLost = true;
+				}
+			}
+			else
 			{
 				externs::hasLost = true;
 			}
 		}
-		else
-		{
-			externs::hasLost = true;
-		}
-	}
 
-	if (externs::hasLost)
-	{
-		externs::retry = true;
-		externs::hasLost = false;
-		game::gameState = game::state::State::Menu;
+		if (externs::hasLost)
+		{
+			externs::retry = true;
+			externs::hasLost = false;
+			game::gameState = game::state::State::Menu;
+		}
 	}
 }
 
 void game::Draw(state::PlayStyle currentPlayStyle)
 {
-	assets::parallax::Draw();
-
-	if (objects::bird1.isOn)
+	if (!externs::hasReadRules)
 	{
-		player::Draw(objects::bird1);
+		std::string player1Text = "Player1";
+		int player1TextFont = 30;
+		DrawText(player1Text.c_str(), externs::screenWidth / 2 - 200- MeasureText(player1Text.c_str(), player1TextFont) / 2, externs::screenHeight / 5, player1TextFont, BLACK);
+
+		std::string player2Text = "Player2";
+		int player2TextFont = 30;
+		DrawText(player2Text.c_str(), externs::screenWidth / 2 + 200 - MeasureText(player2Text.c_str(), player2TextFont) / 2, externs::screenHeight / 5, player2TextFont, BLACK);
+
+		std::string player1ControlText = "-W to jump";
+		int player1ControlTextFont = 22;
+		DrawText(player1ControlText.c_str(), externs::screenWidth / 2 - 200 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, externs::screenHeight / 2-50, player1ControlTextFont, BLACK);
+
+		std::string player2ControlText = "-Up arrow to jump";
+		int player2ControlTextFont = 22;
+		DrawText(player2ControlText.c_str(), externs::screenWidth / 2 + 200 - MeasureText(player2ControlText.c_str(), player2ControlTextFont) / 2, externs::screenHeight / 2-50, player2ControlTextFont, BLACK);
+
+		std::string continueText = "Press ENTER to continue";
+		int continueTextFont = 30;
+		DrawText(continueText.c_str(), externs::screenWidth / 2 - MeasureText(continueText.c_str(), continueTextFont) / 2, externs::screenHeight / 2 + 150, continueTextFont, BLACK);
 	}
-
-	if (currentPlayStyle == game::state::PlayStyle::Multiplayer)
+	else
 	{
-		if (objects::bird2.isOn)
+		assets::parallax::Draw();
+
+		if (objects::bird1.isOn)
 		{
-			player::Draw(objects::bird2);
+			player::Draw(objects::bird1);
 		}
-	}
 
-	obstacle::Draw(objects::obstacle);
+		if (currentPlayStyle == game::state::PlayStyle::Multiplayer)
+		{
+			if (objects::bird2.isOn)
+			{
+				player::Draw(objects::bird2);
+			}
+		}
+
+		obstacle::Draw(objects::obstacle);
+	}
 }
 
 void game::menu::Update(buttons::Button& singleplayer, buttons::Button& multiplayer, buttons::Button& credits, buttons::Button& exit, objects::Cursor& cursor, state::State& currentState, state::PlayStyle& currentPlayStyle)

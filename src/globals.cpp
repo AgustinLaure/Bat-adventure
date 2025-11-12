@@ -7,6 +7,7 @@ int externs::screenHeight = 768;
 
 bool externs::retry = false;
 bool externs::hasLost = false;
+bool externs::hasReadRules = false;
 
 std::string externs::backgroundFrontTexture = "res/placeholder_front.png";
 int externs::backgroundFrontTextureID = 0;
