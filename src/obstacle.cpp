@@ -13,10 +13,13 @@ void obstacle::Initialization(Obstacle& obstacle)
 	obstacle.textureID = 0;
 
 	obstacle.width = 50.0f;
-	obstacle.height = 400.0f;
+	obstacle.height = 700.0f;
 
-	obstacle.bottom = { static_cast<float>(externs::screenWidth) - obstacle.width,  static_cast<float>(externs::screenHeight) - obstacle.height };
-	obstacle.top = { obstacle.bottom.x,  (-obstacle.bottom.y + obstacle.height) - variables::offSet};
+	float obstacleSpace = 200.0f;
+	float offset = 15.0f;
+	Vector2 gap = { static_cast<float>(externs::screenWidth) , static_cast<float>(GetRandomValue(static_cast<int>(offset), static_cast<int>(externs::screenHeight - offset - obstacleSpace))) };
+	obstacle.bottom = { static_cast<float>(externs::screenWidth), gap.y - obstacle.height };
+	obstacle.top = { obstacle.bottom.x, gap.y + obstacleSpace };
 
 	obstacle.velocity = variables::velocity;
 }
@@ -28,8 +31,11 @@ void obstacle::Update(Obstacle& obstacle)
 
 	if (obstacle::CheckOutOfBounds(obstacle))
 	{
-		obstacle.bottom = { static_cast<float>(externs::screenWidth) - obstacle.width, static_cast<float>(GetRandomValue(0, externs::screenHeight / 2)) - obstacle.height };
-		obstacle.top = { obstacle.bottom.x, static_cast<float>(-(GetRandomValue(externs::screenHeight / 2, externs::screenHeight)) + obstacle.height) - variables::offSet };
+		float obstacleSpace = 200.0f;
+		float offset = 15.0f;
+		Vector2 gap = { static_cast<float>(externs::screenWidth) , static_cast<float>(GetRandomValue(static_cast<int>(offset), static_cast<int>(externs::screenHeight - offset - obstacleSpace)))};
+		obstacle.bottom = { static_cast<float>(externs::screenWidth), gap.y - obstacle.height };
+		obstacle.top = { obstacle.bottom.x, gap.y + obstacleSpace };
 	}
 }
 
