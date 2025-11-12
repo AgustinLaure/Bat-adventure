@@ -284,21 +284,34 @@ void game::Draw(state::PlayStyle currentPlayStyle)
 {
 	if (!externs::hasReadRules)
 	{
-		std::string player1Text = "Player1";
-		int player1TextFont = 30;
-		DrawText(player1Text.c_str(), externs::screenWidth / 2 - 200- MeasureText(player1Text.c_str(), player1TextFont) / 2, externs::screenHeight / 5, player1TextFont, BLACK);
+		if (currentPlayStyle == state::PlayStyle::Multiplayer)
+		{
+			std::string player1Text = "Player1";
+			int player1TextFont = 30;
+			DrawText(player1Text.c_str(), externs::screenWidth / 2 - 200 - MeasureText(player1Text.c_str(), player1TextFont) / 2, externs::screenHeight / 5, player1TextFont, BLACK);
 
-		std::string player2Text = "Player2";
-		int player2TextFont = 30;
-		DrawText(player2Text.c_str(), externs::screenWidth / 2 + 200 - MeasureText(player2Text.c_str(), player2TextFont) / 2, externs::screenHeight / 5, player2TextFont, BLACK);
+			std::string player2Text = "Player2";
+			int player2TextFont = 30;
+			DrawText(player2Text.c_str(), externs::screenWidth / 2 + 200 - MeasureText(player2Text.c_str(), player2TextFont) / 2, externs::screenHeight / 5, player2TextFont, BLACK);
 
-		std::string player1ControlText = "-W to jump";
-		int player1ControlTextFont = 22;
-		DrawText(player1ControlText.c_str(), externs::screenWidth / 2 - 200 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, externs::screenHeight / 2-50, player1ControlTextFont, BLACK);
+			std::string player1ControlText = "-W to jump";
+			int player1ControlTextFont = 22;
+			DrawText(player1ControlText.c_str(), externs::screenWidth / 2 - 200 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, externs::screenHeight / 2 - 50, player1ControlTextFont, BLACK);
 
-		std::string player2ControlText = "-Up arrow to jump";
-		int player2ControlTextFont = 22;
-		DrawText(player2ControlText.c_str(), externs::screenWidth / 2 + 200 - MeasureText(player2ControlText.c_str(), player2ControlTextFont) / 2, externs::screenHeight / 2-50, player2ControlTextFont, BLACK);
+			std::string player2ControlText = "-Up arrow to jump";
+			int player2ControlTextFont = 22;
+			DrawText(player2ControlText.c_str(), externs::screenWidth / 2 + 200 - MeasureText(player2ControlText.c_str(), player2ControlTextFont) / 2, externs::screenHeight / 2 - 50, player2ControlTextFont, BLACK);
+		}
+		else
+		{
+			std::string player1Text = "Player";
+			int player1TextFont = 30;
+			DrawText(player1Text.c_str(), externs::screenWidth / 2 - MeasureText(player1Text.c_str(), player1TextFont) / 2, externs::screenHeight / 5, player1TextFont, BLACK);
+
+			std::string player1ControlText = "-W to jump";
+			int player1ControlTextFont = 22;
+			DrawText(player1ControlText.c_str(), externs::screenWidth / 2 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, externs::screenHeight / 2 - 50, player1ControlTextFont, BLACK);
+		}
 
 		std::string continueText = "Press ENTER to continue";
 		int continueTextFont = 30;
