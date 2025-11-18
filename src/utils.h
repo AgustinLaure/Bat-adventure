@@ -1,6 +1,6 @@
 #pragma once
 
-namespace utils
+namespace Utils
 {
     float PercentToPixelsX(float percentX);
     float PercentToPixelsY(float percentY);

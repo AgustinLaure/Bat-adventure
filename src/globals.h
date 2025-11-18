@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace externs
+namespace Externs
 {
 	extern float deltaT;
 
@@ -10,7 +10,6 @@ namespace externs
 
 	extern bool retry;
 	extern bool hasLost;
-	extern bool hasReadRules;
 
 	extern std::string backgroundFrontTexture;
 	extern int backgroundFrontTextureID;
@@ -22,7 +21,7 @@ namespace externs
 	extern int backgroundBackTextureID;
 }
 
-namespace globals
+namespace Globals
 {
 	const float acceleration = 981.0f;
 }

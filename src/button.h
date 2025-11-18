@@ -2,11 +2,11 @@
 #include "raylib.h"
 #include "text.h"
 
-namespace buttons
+namespace Buttons
 {
 	struct Button
 	{
-		text::Text text;
+		Text::Text text;
 
 		Vector2 position = {};
 

@@ -2,7 +2,7 @@
 #include <string>
 #include "raylib.h"
 
-namespace text
+namespace Text
 {
 	struct Text
 	{

@@ -2,7 +2,7 @@
 
 int main()
 {
-	game::GameLoop();
+	Game::GameLoop();
 
 	return 0;
 }

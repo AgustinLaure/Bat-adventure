@@ -2,22 +2,25 @@
 
 #include "globals.h"
 
-float utils::PercentToPixelsX(float percentX)
+namespace Utils
 {
-	return (percentX / 100.0f) * externs::screenWidth;
-}
+	float PercentToPixelsX(float percentX)
+	{
+		return (percentX / 100.0f) * Externs::screenWidth;
+	}
 
-float utils::PercentToPixelsY(float percentY)
-{
-	return (percentY / 100.0f) * externs::screenHeight;
-}
+	float PercentToPixelsY(float percentY)
+	{
+		return (percentY / 100.0f) * Externs::screenHeight;
+	}
 
-float utils::PixelsToPercentX(float px)
-{
-	return (px / externs::screenWidth) * 100.0f;
-}
+	float PixelsToPercentX(float px)
+	{
+		return (px / Externs::screenWidth) * 100.0f;
+	}
 
-float utils::PixelsToPercentY(float py)
-{
-	return (py / externs::screenHeight) * 100.0f;
+	float PixelsToPercentY(float py)
+	{
+		return (py / Externs::screenHeight) * 100.0f;
+	}
 }
