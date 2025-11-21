@@ -11,7 +11,7 @@ namespace Text
 		float posX = 0;
 		float posY = 0;
 
-		int fonstSize = 20;
+		int fontSize = 20;
 		int spacing = 0;
 
 		Color color = WHITE;

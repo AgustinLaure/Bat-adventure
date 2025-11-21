@@ -39,12 +39,12 @@ namespace Game
 			static float scrollingMid = 0.0f;
 			static float scrollingFront = 0.0f;
 
-			static Text::Text version;
-			static Texture tempTexture;
-
+			static void Reset();
 			static void Update();
 			static void Draw();
 		}
+		static Text::Text version;
+		static Texture tempTexture;
 	}
 
 	namespace Playing
@@ -57,6 +57,7 @@ namespace Game
 
 			static Buttons::Button retryButton;
 			static Buttons::Button exitButton;
+			static Buttons::Button resumeButton;
 		}
 
 		enum class Playstyle
@@ -131,6 +132,11 @@ namespace Game
 				break;
 
 			case GameplayScene::Playing:
+				if (IsKeyPressed(KEY_P))
+				{
+					currentScene = GameplayScene::Pause;
+				}
+
 				Assets::Parallax::Update();
 
 				Essentials::GetDeltaTime();
@@ -194,6 +200,39 @@ namespace Game
 
 			case GameplayScene::Pause:
 
+				Essentials::UpdateMousePosition();
+
+				if (CheckCollisionPointRec({ Essentials::Objects::cursor.positionX, Essentials::Objects::cursor.positionY }, { Objects::exitButton.position.x - Objects::exitButton.width / 2, Objects::exitButton.position.y - Objects::exitButton.height / 2, Objects::exitButton.width, Objects::exitButton.height }))
+				{
+					Objects::exitButton.text.color = WHITE;
+
+					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+					{
+						Externs::retry = true;
+						currentScene = GameplayScene::ReadingRules;
+						currentState = State::Menu;
+					}
+				}
+				else
+				{
+					Objects::exitButton.text.color = GRAY;
+				}
+
+				if (CheckCollisionPointRec({ Essentials::Objects::cursor.positionX, Essentials::Objects::cursor.positionY }, { Objects::resumeButton.position.x - Objects::resumeButton.width / 2, Objects::resumeButton.position.y - Objects::resumeButton.height / 2, Objects::resumeButton.width, Objects::resumeButton.height }))
+				{
+					Objects::resumeButton.text.color = WHITE;
+
+					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+					{
+						currentScene = GameplayScene::Playing;
+					}
+				}
+				else
+				{
+					Objects::resumeButton.text.color = GRAY;
+				}
+
+				break;
 			case GameplayScene::Finished:
 
 				Essentials::UpdateMousePosition();
@@ -228,22 +267,21 @@ namespace Game
 				{
 					Objects::exitButton.text.color = GRAY;
 				}
-
-				if (Externs::retry)
-				{
-					Player::Initialization(Playing::Objects::bird1, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
-					Player::Initialization(Playing::Objects::bird2, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
-					Obstacle::Initialization(Playing::Objects::obstacle);
-
-					Externs::retry = false;
-				}
-
-				break;
-
+			
 				break;
 
 			default:
 				break;
+			}
+
+			if (Externs::retry)
+			{
+				Player::Initialization(Playing::Objects::bird1, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
+				Player::Initialization(Playing::Objects::bird2, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
+				Obstacle::Initialization(Playing::Objects::obstacle);
+				Assets::Parallax::Reset();
+
+				Externs::retry = false;
 			}
 		}
 
@@ -316,10 +354,13 @@ namespace Game
 				break;
 
 			case Playing::GameplayScene::Pause:
-
+				DrawText("PAUSED", Externs::screenWidth / 2 - MeasureText("PAUSED", 60) / 2, Externs::screenHeight / 2 - 100, 60, WHITE);
+				Buttons::Draw(Objects::resumeButton);
+				Buttons::Draw(Objects::exitButton);
 				break;
 
 			case Playing::GameplayScene::Finished:
+				DrawText("YOU LOST!", Externs::screenWidth / 2 - MeasureText("YOU LOST!", 60) / 2, Externs::screenHeight / 2 - 100, 60, WHITE);
 				Buttons::Draw(Objects::retryButton);
 				Buttons::Draw(Objects::exitButton);
 				break;
@@ -451,12 +492,12 @@ namespace Game
 
 		void DrawCurrentVer()
 		{
-			Assets::Parallax::version.text = "ver 0.4";
-			Assets::Parallax::version.posX = 95.0f;
-			Assets::Parallax::version.posY = 98.0f;
-			Assets::Parallax::version.color = BLACK;
+			Assets::version.text = "ver 0.4";
+			Assets::version.posX = 95.0f;
+			Assets::version.posY = 98.0f;
+			Assets::version.color = BLACK;
 
-			Draw::DrawText(Assets::Parallax::version);
+			Draw::DrawText(Assets::version);
 		}
 
 		namespace Credits
@@ -488,21 +529,21 @@ namespace Game
 				credits1.text = "Made by Eluney Jazmin Mousseigne";
 				credits1.posX = 50;
 				credits1.posY = 20;
-				credits1.fonstSize = 40;
+				credits1.fontSize = 40;
 				credits1.color = BLACK;
 
 				Text::Text credits2;
 				credits2.text = "&";
 				credits2.posX = 50;
 				credits2.posY = 30;
-				credits2.fonstSize = 40;
+				credits2.fontSize = 40;
 				credits2.color = BLACK;
 
 				Text::Text credits3;
 				credits3.text = "Agustin Ezequiel Laure";
 				credits3.posX = 50;
 				credits3.posY = 40;
-				credits3.fonstSize = 40;
+				credits3.fontSize = 40;
 				credits3.color = BLACK;
 
 				Draw::DrawText(credits1);
@@ -532,6 +573,13 @@ namespace Game
 	{
 		namespace Parallax
 		{
+			void Reset()
+			{
+				scrollingBack = 0.0f;
+				scrollingMid = 0.0f;
+				scrollingFront = 0.0f;
+			}
+
 			void Update()
 			{
 				scrollingBack -= 1.0f * Externs::deltaT;
@@ -590,24 +638,27 @@ namespace Game
 		Menu::Credits::Objects::returnButton.text.text = "EXIT";
 		Buttons::Initialize(Menu::Credits::Objects::returnButton, buttonWidth, buttonHeight, buttonCenterX, 55.0f);
 
-		Assets::Parallax::tempTexture = LoadTexture(Externs::backgroundFrontTexture.c_str());
-		Externs::backgroundFrontTextureID = Assets::Parallax::tempTexture.id;
+		Assets::tempTexture = LoadTexture(Externs::backgroundFrontTexture.c_str());
+		Externs::backgroundFrontTextureID = Assets::tempTexture.id;
 
-		Assets::Parallax::tempTexture = LoadTexture(Externs::backgroundMiddleTexture.c_str());
-		Externs::backgroundMiddleTextureID = Assets::Parallax::tempTexture.id;
+		Assets::tempTexture = LoadTexture(Externs::backgroundMiddleTexture.c_str());
+		Externs::backgroundMiddleTextureID = Assets::tempTexture.id;
 
-		Assets::Parallax::tempTexture = LoadTexture(Externs::backgroundBackTexture.c_str());
-		Externs::backgroundBackTextureID = Assets::Parallax::tempTexture.id;
+		Assets::tempTexture = LoadTexture(Externs::backgroundBackTexture.c_str());
+		Externs::backgroundBackTextureID = Assets::tempTexture.id;
 
 		Player::Initialization(Playing::Objects::bird1, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 		Player::Initialization(Playing::Objects::bird2, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 		Obstacle::Initialization(Playing::Objects::obstacle);
 
 		Playing::Objects::exitButton.text.text = "EXIT";
-		Buttons::Initialize(Playing::Objects::exitButton, buttonWidth, buttonHeight, buttonCenterX - 10, 80.0f);
+		Buttons::Initialize(Playing::Objects::exitButton, buttonWidth, buttonHeight, buttonCenterX - 14, 80.0f);
 
 		Playing::Objects::retryButton.text.text = "RETRY";
-		Buttons::Initialize(Playing::Objects::retryButton, buttonWidth, buttonHeight, buttonCenterX + 10, 80.0f);
+		Buttons::Initialize(Playing::Objects::retryButton, buttonWidth, buttonHeight, buttonCenterX + 14, 80.0f);
+
+		Playing::Objects::resumeButton.text.text = "RESUME";
+		Buttons::Initialize(Playing::Objects::resumeButton, buttonWidth, buttonHeight, buttonCenterX + 10, 80.0f);
 	}
 
 	void GameLoop()
