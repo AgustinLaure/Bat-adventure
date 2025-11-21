@@ -26,4 +26,8 @@ namespace Externs
 	std::string birdHitSound = "res/sounds/sfx/bird_hit.mp3";
 
 	std::string birdFallSound = "res/sounds/sfx/bird_fall.mp3";
+
+	std::string batSprite = "res/sprites/entities/bat.png";
+
+	std::string obstacleSprite = "res/sprites/entities/obstacle.png";
 }

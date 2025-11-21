@@ -4,6 +4,11 @@
 
 namespace Obstacle
 {
+	namespace Assets
+	{
+		static Texture sprite;
+	}
+
 	namespace Variables
 	{
 	static float velocity = 500.0f;
@@ -12,7 +17,9 @@ namespace Obstacle
 
 	void Initialization(Obstacle& obstacle)
 	{
-		obstacle.width = 50.0f;
+		Assets::sprite = LoadTexture(Externs::obstacleSprite.c_str());
+
+		obstacle.width = 70.0f;
 		obstacle.height = 700.0f;
 
 		float obstacleSpace = 200.0f;
@@ -44,8 +51,8 @@ namespace Obstacle
 
 	void Draw(Obstacle obstacle)
 	{
-		DrawRectangle(static_cast<int>(obstacle.bottom.x), static_cast<int>(obstacle.bottom.y), static_cast<int>(obstacle.width), static_cast<int>(obstacle.height), RED);
-		DrawRectangle(static_cast<int>(obstacle.top.x), static_cast<int>(obstacle.top.y), static_cast<int>(obstacle.width), static_cast<int>(obstacle.height), RED);
+		DrawTextureEx(Assets::sprite, { obstacle.bottom.x -166, obstacle.top.y }, 0, 0.7f, WHITE);
+		DrawTextureEx(Assets::sprite, { obstacle.bottom.x+ obstacle.width + 166, obstacle.top.y-700.0f/2 +150.0f}, 180, 0.7f, WHITE);
 	}
 
 	bool CheckOutOfBounds(Obstacle& obstacle)

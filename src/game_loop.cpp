@@ -97,7 +97,7 @@ namespace Game
 		static void Update();
 		static void Draw();
 
-		static bool CheckCollisionsCircleRectangle(float circleX, float circleY, float recX, float recY, float width, float height);
+		static bool CheckCollisionsCircleRectangle(float circleX, float circleY, float radius, float recX, float recY, float width, float height);
 	}
 
 	namespace Menu
@@ -262,9 +262,9 @@ namespace Game
 
 				if (Objects::bird1.isOn)
 				{
-					if (CheckCollisionsCircleRectangle(Objects::bird1.position.x, Objects::bird1.position.y, Objects::obstacle.bottom.x,
+					if (CheckCollisionsCircleRectangle(Objects::bird1.position.x, Objects::bird1.position.y, Player::birdRadius, Objects::obstacle.bottom.x,
 						Objects::obstacle.bottom.y, Objects::obstacle.width, Objects::obstacle.height) || CheckCollisionsCircleRectangle
-						(Objects::bird1.position.x, Objects::bird1.position.y, Objects::obstacle.top.x, Objects::obstacle.top.y, Objects::obstacle.width, Objects::obstacle.height))
+						(Objects::bird1.position.x, Objects::bird1.position.y, Player::birdRadius, Objects::obstacle.top.x, Objects::obstacle.top.y, Objects::obstacle.width, Objects::obstacle.height))
 					{
 						PlaySound(Assets::hit);
 						Objects::bird1.isOn = false;
@@ -273,9 +273,9 @@ namespace Game
 
 				if (Objects::bird2.isOn)
 				{
-					if (CheckCollisionsCircleRectangle(Objects::bird2.position.x, Objects::bird2.position.y, Objects::obstacle.bottom.x,
+					if (CheckCollisionsCircleRectangle(Objects::bird2.position.x, Objects::bird2.position.y, Player::birdRadius, Objects::obstacle.bottom.x,
 						Objects::obstacle.bottom.y, Objects::obstacle.width, Objects::obstacle.height) || CheckCollisionsCircleRectangle
-						(Objects::bird2.position.x, Objects::bird2.position.y, Objects::obstacle.top.x, Objects::obstacle.top.y, Objects::obstacle.width, Objects::obstacle.height))
+						(Objects::bird2.position.x, Objects::bird2.position.y, Player::birdRadius, Objects::obstacle.top.x, Objects::obstacle.top.y, Objects::obstacle.width, Objects::obstacle.height))
 					{
 						PlaySound(Assets::hit);
 						Objects::bird2.isOn = false;
@@ -384,8 +384,8 @@ namespace Game
 
 			if (retry)
 			{
-				Player::Initialization(Playing::Objects::bird1, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
-				Player::Initialization(Playing::Objects::bird2, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
+				Player::Initialization(Playing::Objects::bird1, WHITE, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
+				Player::Initialization(Playing::Objects::bird2, RED, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 				Obstacle::Initialization(Playing::Objects::obstacle);
 				Parallax::Reset();
 				score = 0;
@@ -402,10 +402,6 @@ namespace Game
 			{
 				Parallax::Draw();
 
-
-				Player::Draw(Objects::bird1);
-
-
 				if (currentPlaystyle == Playstyle::Multiplayer)
 				{
 
@@ -414,6 +410,8 @@ namespace Game
 				}
 
 				Obstacle::Draw(Objects::obstacle);
+
+				Player::Draw(Objects::bird1);
 
 				if (!hasLost)
 				{
@@ -506,10 +504,8 @@ namespace Game
 			}
 		}
 
-		bool CheckCollisionsCircleRectangle(float circleX, float circleY, float recX, float recY, float width, float height)
+		bool CheckCollisionsCircleRectangle(float circleX, float circleY, float radius, float recX, float recY, float width, float height)
 		{
-			const float circleRadius = 30.0f;
-
 			float closestX = std::max(recX, std::min(circleX, recX + width));
 			float closestY = std::max(recY, std::min(circleY, recY + height));
 
@@ -518,7 +514,7 @@ namespace Game
 
 			float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
 
-			if (distanceSquared < (circleRadius * circleRadius))
+			if (distanceSquared < (radius * radius))
 			{
 				return true;
 			}
@@ -734,8 +730,8 @@ namespace Game
 		Menu::Credits::Objects::returnButton.text.text = "EXIT";
 		Buttons::Initialize(Menu::Credits::Objects::returnButton, buttonWidth, buttonHeight, buttonCenterX, 55.0f);
 
-		Player::Initialization(Playing::Objects::bird1, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
-		Player::Initialization(Playing::Objects::bird2, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
+		Player::Initialization(Playing::Objects::bird1, WHITE, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
+		Player::Initialization(Playing::Objects::bird2, RED, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 		Obstacle::Initialization(Playing::Objects::obstacle);
 
 		Playing::Objects::exitButton.text.text = "EXIT";
@@ -766,6 +762,7 @@ namespace Game
 		Assets::select = LoadSound(Externs::selectSound.c_str());
 		Playing::Assets::hit = LoadSound(Externs::birdHitSound.c_str());
 		Playing::Assets::pause = LoadSound(Externs::pauseSound.c_str());
+
 	}
 
 	void UnloadTextures()
@@ -778,7 +775,7 @@ namespace Game
 	void UnloadSounds()
 	{
 		UnloadMusicStream(Playing::Assets::song);
-		Player::UnloadSounds();
+		Player::Deinit();
 		UnloadSound(Playing::Assets::pause);
 		UnloadSound(Playing::Assets::hit);
 		UnloadSound(Assets::select);

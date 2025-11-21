@@ -14,8 +14,6 @@ namespace Obstacle
 		float height;
 
 		bool passed;
-
-		//Texture texture;
 	};
 
 	void Initialization(Obstacle& obstacle);

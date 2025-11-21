@@ -27,6 +27,10 @@ namespace Externs
 	extern std::string birdHitSound;
 
 	extern std::string birdFallSound;
+
+	extern std::string batSprite;
+
+	extern std::string obstacleSprite;
 }
 
 namespace Globals

@@ -13,12 +13,12 @@ namespace Player
 
 		KeyboardKey moveUpKey;
 
-		//Texture texture;
+		Color color;
 	};
 
+	const float birdRadius = 30.0f;
 	
-
-	void Initialization(Bird& bird, KeyboardKey moveUpKey, Vector2 pos);
+	void Initialization(Bird& bird, Color color, KeyboardKey moveUpKey, Vector2 pos);
 	void Update(Bird& bird);
 	void Draw(Bird bird);
 
@@ -28,5 +28,5 @@ namespace Player
 	bool HasLost(Bird bird);
 
 	void CheckState(Bird& bird);
-	void UnloadSounds();
+	void Deinit();
 }

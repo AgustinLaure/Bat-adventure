@@ -9,17 +9,24 @@ namespace Player
 	{
 		static Sound flap;
 		static Sound fall;
+
+		static Texture sprite;
 	}
 
 	namespace Variables
 	{
 		static float velocity = 500.0f;
+		static Color color = WHITE;
 	}
 
-	void Initialization(Bird& bird, KeyboardKey moveUpKey, Vector2 pos)
+	void Initialization(Bird& bird, Color color, KeyboardKey moveUpKey, Vector2 pos)
 	{
+		Assets::sprite = LoadTexture(Externs::batSprite.c_str());
+		
 		Assets::flap = LoadSound(Externs::flapSound.c_str());
 		Assets::fall = LoadSound(Externs::birdFallSound.c_str());
+
+		bird.color = color;
 
 		bird.position = pos;
 
@@ -47,7 +54,11 @@ namespace Player
 
 	void Draw(Bird bird)
 	{
-		DrawCircleV(bird.position, 30.0f, BLUE);
+		Vector2 realPos;
+		realPos.x = bird.position.x - static_cast<int>(birdRadius*1.5);
+		realPos.y = bird.position.y - static_cast<int>(birdRadius*1.5);
+
+		DrawTextureEx(Assets::sprite, realPos, 0.0f, 0.06f, bird.color);
 	}
 
 	bool IsPlayerMoving(KeyboardKey moveUpKey)
@@ -79,10 +90,11 @@ namespace Player
 		}
 	}
 
-	void UnloadSounds()
+	void Deinit()
 	{
 		UnloadSound(Assets::flap);
 		UnloadSound(Assets::fall);
+		UnloadTexture(Assets::sprite);
 	}
 }
 
