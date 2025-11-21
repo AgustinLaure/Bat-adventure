@@ -31,8 +31,13 @@ namespace Game
 		static void GetDeltaTime();
 	}
 
-	namespace Assets
+	namespace Playing
 	{
+		namespace Assets
+		{
+			static Music song;
+		}
+
 		namespace Parallax
 		{
 			static float scrollingBack = 0.0f;
@@ -47,11 +52,7 @@ namespace Game
 			static void Update();
 			static void Draw();
 		}
-		static Text::Text version;
-	}
 
-	namespace Playing
-	{
 		namespace Objects
 		{
 			static Player::Bird bird1;
@@ -93,6 +94,12 @@ namespace Game
 
 	namespace Menu
 	{
+		namespace Assets
+		{
+			static Text::Text version;
+			static Music song;
+		}
+
 		namespace Objects
 		{
 			static Buttons::Button singleplayer;
@@ -129,8 +136,59 @@ namespace Game
 
 	namespace Playing
 	{
+		namespace Parallax
+		{
+			void Reset()
+			{
+				scrollingBack = 0.0f;
+				scrollingMid = 0.0f;
+				scrollingFront = 0.0f;
+			}
+
+			void Update()
+			{
+				scrollingBack -= 1.0f * Externs::deltaT;
+				scrollingMid -= 2.0f * Externs::deltaT;
+				scrollingFront -= 4.0f * Externs::deltaT;
+
+				if (scrollingBack <= -200.0f)
+				{
+					scrollingBack = 0;
+				}
+				if (scrollingMid <= -200.0f)
+				{
+					scrollingMid = 0;
+				}
+				if (scrollingFront <= -200.0f)
+				{
+					scrollingFront = 0;
+				}
+			}
+
+			void Draw()
+			{
+				Draw::DrawSpriteEx(backgroundBackTexture, scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundBackTexture, 200.0f + scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+
+				Draw::DrawSpriteEx(backgroundMiddleTexture, scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundMiddleTexture, 200.0f + scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+
+				Draw::DrawSpriteEx(backgroundFrontTexture, scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundFrontTexture, 200.0f + scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+			}
+		}
+
 		void Update()
 		{
+			if (currentScene != GameplayScene::ReadingRules)
+			{
+				UpdateMusicStream(Assets::song);
+			}
+			else
+			{
+				UpdateMusicStream(Menu::Assets::song);
+			}
+
 			switch (currentScene)
 			{
 			case GameplayScene::ReadingRules:
@@ -162,8 +220,6 @@ namespace Game
 							Objects::obstacle.passed = true;
 						}
 					}
-
-					
 				}
 
 				if (IsKeyPressed(KEY_P))
@@ -171,7 +227,7 @@ namespace Game
 					currentScene = GameplayScene::Pause;
 				}
 
-				Assets::Parallax::Update();
+				Parallax::Update();
 
 				Essentials::GetDeltaTime();
 
@@ -313,7 +369,7 @@ namespace Game
 				Player::Initialization(Playing::Objects::bird1, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 				Player::Initialization(Playing::Objects::bird2, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 				Obstacle::Initialization(Playing::Objects::obstacle);
-				Assets::Parallax::Reset();
+				Parallax::Reset();
 				score = 0;
 				timeAlive = 0.0f;
 
@@ -326,7 +382,7 @@ namespace Game
 		{
 			if (currentScene != GameplayScene::ReadingRules)
 			{
-				Assets::Parallax::Draw();
+				Parallax::Draw();
 
 
 				Player::Draw(Objects::bird1);
@@ -631,51 +687,6 @@ namespace Game
 		}
 	}
 
-	namespace Assets
-	{
-		namespace Parallax
-		{
-			void Reset()
-			{
-				scrollingBack = 0.0f;
-				scrollingMid = 0.0f;
-				scrollingFront = 0.0f;
-			}
-
-			void Update()
-			{
-				scrollingBack -= 1.0f * Externs::deltaT;
-				scrollingMid -= 2.0f * Externs::deltaT;
-				scrollingFront -= 4.0f * Externs::deltaT;
-
-				if (scrollingBack <= -200.0f)
-				{
-					scrollingBack = 0;
-				}
-				if (scrollingMid <= -200.0f)
-				{
-					scrollingMid = 0;
-				}
-				if (scrollingFront <= -200.0f)
-				{
-					scrollingFront = 0;
-				}
-			}
-
-			void Draw()
-			{
-				Draw::DrawSpriteEx(backgroundBackTexture, scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-				Draw::DrawSpriteEx(backgroundBackTexture, 200.0f + scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-
-				Draw::DrawSpriteEx(backgroundMiddleTexture, scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-				Draw::DrawSpriteEx(backgroundMiddleTexture, 200.0f + scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-
-				Draw::DrawSpriteEx(backgroundFrontTexture, scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-				Draw::DrawSpriteEx(backgroundFrontTexture, 200.0f + scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-			}
-		}
-	}
-
 	void Initialize()
 	{
 		float buttonWidth = 25.0f;
@@ -713,23 +724,36 @@ namespace Game
 		Playing::Objects::resumeButton.text.text = "RESUME";
 		Buttons::Initialize(Playing::Objects::resumeButton, buttonWidth, buttonHeight, buttonCenterX + 10, 80.0f);
 
-		Assets::Parallax::backgroundFrontTexture = LoadTexture(Externs::backgroundFrontTexture.c_str());
+		Playing::Parallax::backgroundFrontTexture = LoadTexture(Externs::backgroundFrontTexture.c_str());
 
-		Assets::Parallax::backgroundMiddleTexture = LoadTexture(Externs::backgroundMiddleTexture.c_str());
+		Playing::Parallax::backgroundMiddleTexture = LoadTexture(Externs::backgroundMiddleTexture.c_str());
 
-		Assets::Parallax::backgroundBackTexture = LoadTexture(Externs::backgroundBackTexture.c_str());
+		Playing::Parallax::backgroundBackTexture = LoadTexture(Externs::backgroundBackTexture.c_str());
+
+		Playing::Assets::song = LoadMusicStream(Externs::playingSong.c_str());
+		PlayMusicStream(Playing::Assets::song);
+
+		SetMusicVolume(Playing::Assets::song, 0.5);
+
+		Menu::Assets::song = LoadMusicStream(Externs::menuSong.c_str());
+		PlayMusicStream(Menu::Assets::song);
+
+		SetMusicVolume(Menu::Assets::song, 0.5);
 	}
 
 	void UnloadTextures()
 	{
-		UnloadTexture(Assets::Parallax::backgroundFrontTexture);
-		UnloadTexture(Assets::Parallax::backgroundMiddleTexture);
-		UnloadTexture(Assets::Parallax::backgroundBackTexture);
+		UnloadTexture(Playing::Parallax::backgroundFrontTexture);
+		UnloadTexture(Playing::Parallax::backgroundMiddleTexture);
+		UnloadTexture(Playing::Parallax::backgroundBackTexture);
+
+		UnloadMusicStream(Playing::Assets::song);
 	}
 
 	void GameLoop()
 	{
 		InitWindow(Externs::screenWidth, Externs::screenHeight, "Flappy Bird");
+		InitAudioDevice();
 
 		Initialize();
 
@@ -739,6 +763,7 @@ namespace Game
 			{
 			case State::Menu:
 
+				UpdateMusicStream(Menu::Assets::song);
 				Menu::Update();
 
 				break;
@@ -751,6 +776,7 @@ namespace Game
 
 			case State::Credits:
 
+				UpdateMusicStream(Menu::Assets::song);
 				Menu::Credits::Update();
 
 				break;
@@ -791,6 +817,7 @@ namespace Game
 
 		UnloadTextures();
 
+		CloseAudioDevice();
 		CloseWindow();
 	}
 }

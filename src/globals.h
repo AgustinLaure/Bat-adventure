@@ -8,17 +8,15 @@ namespace Externs
 	extern int screenWidth;
 	extern int screenHeight;
 
-	extern bool retry;
-	extern bool hasLost;
-
 	extern std::string backgroundFrontTexture;
-	extern int backgroundFrontTextureID;
 
 	extern std::string backgroundMiddleTexture;
-	extern int backgroundMiddleTextureID;
 
 	extern std::string backgroundBackTexture;
-	extern int backgroundBackTextureID;
+
+	extern std::string playingSong;
+
+	extern std::string menuSong;
 }
 
 namespace Globals

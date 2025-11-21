@@ -11,7 +11,7 @@ namespace Draw
 		DrawTextEx(text.font, text.text.c_str(), { (text.posX * Externs::screenWidth / 100.0f) - (MeasureText(text.text.c_str(), text.fontSize)) / 2.4f, (text.posY * Externs::screenHeight / 100.0f) - (text.fontSize / 2) }, static_cast<float>(text.fontSize), static_cast<float>(text.spacing), text.color);
 	}
 
-	void DrawSpriteEx(Texture texture, float posX, float posY, float width, float height, float rotation, Color tint)
+	void DrawSpriteEx(Texture& texture, float posX, float posY, float width, float height, float rotation, Color tint)
 	{
 		posX = Utils::PercentToPixelsX(posX);
 		posY = Utils::PercentToPixelsY(posY);
