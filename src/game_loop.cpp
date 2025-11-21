@@ -13,6 +13,11 @@
 
 namespace Game
 {
+	namespace Assets
+	{
+		static Sound select;
+	}
+
 	namespace Essentials
 	{
 		struct Cursor
@@ -36,6 +41,9 @@ namespace Game
 		namespace Assets
 		{
 			static Music song;
+
+			static Sound hit;
+			static Sound pause;
 		}
 
 		namespace Parallax
@@ -133,6 +141,7 @@ namespace Game
 
 	static void Initialize();
 	void UnloadTextures();
+	void UnloadSounds();
 
 	namespace Playing
 	{
@@ -224,6 +233,7 @@ namespace Game
 
 				if (IsKeyPressed(KEY_P))
 				{
+					PlaySound(Assets::pause);
 					currentScene = GameplayScene::Pause;
 				}
 
@@ -243,6 +253,10 @@ namespace Game
 						Player::Update(Objects::bird2);
 					}
 				}
+				else
+				{
+					Objects::bird2.isOn = false;
+				}
 
 				Obstacle::Update(Objects::obstacle);
 
@@ -252,6 +266,7 @@ namespace Game
 						Objects::obstacle.bottom.y, Objects::obstacle.width, Objects::obstacle.height) || CheckCollisionsCircleRectangle
 						(Objects::bird1.position.x, Objects::bird1.position.y, Objects::obstacle.top.x, Objects::obstacle.top.y, Objects::obstacle.width, Objects::obstacle.height))
 					{
+						PlaySound(Assets::hit);
 						Objects::bird1.isOn = false;
 					}
 				}
@@ -262,6 +277,7 @@ namespace Game
 						Objects::obstacle.bottom.y, Objects::obstacle.width, Objects::obstacle.height) || CheckCollisionsCircleRectangle
 						(Objects::bird2.position.x, Objects::bird2.position.y, Objects::obstacle.top.x, Objects::obstacle.top.y, Objects::obstacle.width, Objects::obstacle.height))
 					{
+						PlaySound(Assets::hit);
 						Objects::bird2.isOn = false;
 					}
 				}
@@ -314,6 +330,7 @@ namespace Game
 
 					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 					{
+						PlaySound(Game::Assets::select);
 						currentScene = GameplayScene::Playing;
 					}
 				}
@@ -333,6 +350,7 @@ namespace Game
 
 					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 					{
+						PlaySound(Game::Assets::select);
 						retry = true;
 						currentScene = GameplayScene::Playing;
 					}
@@ -522,6 +540,7 @@ namespace Game
 
 				if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 				{
+					PlaySound(Game::Assets::select);
 					currentState = State::Playing;
 					Playing::currentPlaystyle = Playing::Playstyle::Singleplayer;
 				}
@@ -539,6 +558,7 @@ namespace Game
 
 				if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 				{
+					PlaySound(Game::Assets::select);
 					currentState = State::Playing;
 					Playing::currentPlaystyle = Playing::Playstyle::Multiplayer;
 				}
@@ -555,6 +575,7 @@ namespace Game
 				Objects::credits.text.color = WHITE;
 				if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 				{
+					PlaySound(Game::Assets::select);
 					currentState = State::Credits;
 				}
 			}
@@ -570,6 +591,7 @@ namespace Game
 				Objects::exit.text.color = WHITE;
 				if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 				{
+					PlaySound(Game::Assets::select);
 					currentState = State::Exit;
 				}
 			}
@@ -632,6 +654,7 @@ namespace Game
 
 					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 					{
+						PlaySound(Game::Assets::select);
 						currentState = State::Menu;
 					}
 				}
@@ -739,6 +762,10 @@ namespace Game
 		PlayMusicStream(Menu::Assets::song);
 
 		SetMusicVolume(Menu::Assets::song, 0.5);
+
+		Assets::select = LoadSound(Externs::selectSound.c_str());
+		Playing::Assets::hit = LoadSound(Externs::birdHitSound.c_str());
+		Playing::Assets::pause = LoadSound(Externs::pauseSound.c_str());
 	}
 
 	void UnloadTextures()
@@ -746,8 +773,15 @@ namespace Game
 		UnloadTexture(Playing::Parallax::backgroundFrontTexture);
 		UnloadTexture(Playing::Parallax::backgroundMiddleTexture);
 		UnloadTexture(Playing::Parallax::backgroundBackTexture);
+	}
 
+	void UnloadSounds()
+	{
 		UnloadMusicStream(Playing::Assets::song);
+		Player::UnloadSounds();
+		UnloadSound(Playing::Assets::pause);
+		UnloadSound(Playing::Assets::hit);
+		UnloadSound(Assets::select);
 	}
 
 	void GameLoop()
@@ -815,6 +849,7 @@ namespace Game
 			EndDrawing();
 		}
 
+		UnloadSounds();
 		UnloadTextures();
 
 		CloseAudioDevice();

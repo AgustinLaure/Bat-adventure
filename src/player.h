@@ -16,6 +16,8 @@ namespace Player
 		//Texture texture;
 	};
 
+	
+
 	void Initialization(Bird& bird, KeyboardKey moveUpKey, Vector2 pos);
 	void Update(Bird& bird);
 	void Draw(Bird bird);
@@ -26,4 +28,5 @@ namespace Player
 	bool HasLost(Bird bird);
 
 	void CheckState(Bird& bird);
+	void UnloadSounds();
 }

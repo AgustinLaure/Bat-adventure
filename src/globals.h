@@ -17,6 +17,16 @@ namespace Externs
 	extern std::string playingSong;
 
 	extern std::string menuSong;
+
+	extern std::string selectSound;
+
+	extern std::string pauseSound;
+
+	extern std::string flapSound;
+
+	extern std::string birdHitSound;
+
+	extern std::string birdFallSound;
 }
 
 namespace Globals
