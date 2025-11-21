@@ -54,11 +54,15 @@ namespace Player
 
 	void Draw(Bird bird)
 	{
+		if (bird.isOn)
+		{
+
 		Vector2 realPos;
 		realPos.x = bird.position.x - static_cast<int>(birdRadius*1.5);
 		realPos.y = bird.position.y - static_cast<int>(birdRadius*1.5);
 
 		DrawTextureEx(Assets::sprite, realPos, 0.0f, 0.06f, bird.color);
+		}
 	}
 
 	bool IsPlayerMoving(KeyboardKey moveUpKey)
