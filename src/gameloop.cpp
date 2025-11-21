@@ -39,12 +39,15 @@ namespace Game
 			static float scrollingMid = 0.0f;
 			static float scrollingFront = 0.0f;
 
+			static Texture backgroundBackTexture;
+			static Texture backgroundFrontTexture;
+			static Texture backgroundMiddleTexture;
+
 			static void Reset();
 			static void Update();
 			static void Draw();
 		}
 		static Text::Text version;
-		static Texture tempTexture;
 	}
 
 	namespace Playing
@@ -117,6 +120,7 @@ namespace Game
 	static State currentState = State::Menu;
 
 	static void Initialize();
+	void UnloadTextures();
 
 	namespace Playing
 	{
@@ -622,14 +626,14 @@ namespace Game
 
 			void Draw()
 			{
-				Draw::DrawSpriteEx(static_cast<float>(Externs::backgroundBackTextureID), scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-				Draw::DrawSpriteEx(static_cast<float>(Externs::backgroundBackTextureID), 200.0f + scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundBackTexture, scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundBackTexture, 200.0f + scrollingBack, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
 
-				Draw::DrawSpriteEx(static_cast<float>(Externs::backgroundMiddleTextureID), scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-				Draw::DrawSpriteEx(static_cast<float>(Externs::backgroundMiddleTextureID), 200.0f + scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundMiddleTexture, scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundMiddleTexture, 200.0f + scrollingMid, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
 
-				Draw::DrawSpriteEx(static_cast<float>(Externs::backgroundFrontTextureID), scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
-				Draw::DrawSpriteEx(static_cast<float>(Externs::backgroundFrontTextureID), 200.0f + scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundFrontTexture, scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
+				Draw::DrawSpriteEx(backgroundFrontTexture, 200.0f + scrollingFront, 0.0f, 200.0f, 100.0f, 0.0f, WHITE);
 			}
 		}
 	}
@@ -658,15 +662,6 @@ namespace Game
 		Menu::Credits::Objects::returnButton.text.text = "EXIT";
 		Buttons::Initialize(Menu::Credits::Objects::returnButton, buttonWidth, buttonHeight, buttonCenterX, 55.0f);
 
-		Assets::tempTexture = LoadTexture(Externs::backgroundFrontTexture.c_str());
-		Externs::backgroundFrontTextureID = Assets::tempTexture.id;
-
-		Assets::tempTexture = LoadTexture(Externs::backgroundMiddleTexture.c_str());
-		Externs::backgroundMiddleTextureID = Assets::tempTexture.id;
-
-		Assets::tempTexture = LoadTexture(Externs::backgroundBackTexture.c_str());
-		Externs::backgroundBackTextureID = Assets::tempTexture.id;
-
 		Player::Initialization(Playing::Objects::bird1, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 		Player::Initialization(Playing::Objects::bird2, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 		Obstacle::Initialization(Playing::Objects::obstacle);
@@ -679,6 +674,19 @@ namespace Game
 
 		Playing::Objects::resumeButton.text.text = "RESUME";
 		Buttons::Initialize(Playing::Objects::resumeButton, buttonWidth, buttonHeight, buttonCenterX + 10, 80.0f);
+
+		Assets::Parallax::backgroundFrontTexture = LoadTexture(Externs::backgroundFrontTexture.c_str());
+
+		Assets::Parallax::backgroundMiddleTexture = LoadTexture(Externs::backgroundMiddleTexture.c_str());
+
+		Assets::Parallax::backgroundBackTexture = LoadTexture(Externs::backgroundBackTexture.c_str());
+	}
+
+	void UnloadTextures()
+	{
+		UnloadTexture(Assets::Parallax::backgroundFrontTexture);
+		UnloadTexture(Assets::Parallax::backgroundMiddleTexture);
+		UnloadTexture(Assets::Parallax::backgroundBackTexture);
 	}
 
 	void GameLoop()
@@ -743,6 +751,8 @@ namespace Game
 			EndDrawing();
 		}
 
+		UnloadTextures();
+	
 		CloseWindow();
 	}
 }
