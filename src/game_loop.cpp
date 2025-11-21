@@ -629,7 +629,7 @@ namespace Game
 
 		void DrawCurrentVer()
 		{
-			Assets::version.text = "ver 0.4";
+			Assets::version.text = "ver 1.0";
 			Assets::version.posX = 95.0f;
 			Assets::version.posY = 98.0f;
 			Assets::version.color = BLACK;
