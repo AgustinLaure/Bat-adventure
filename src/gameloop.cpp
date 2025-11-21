@@ -111,7 +111,7 @@ namespace Game
 
 	enum class State
 	{
-		Menu, Playing, Credits, HowToPlay, Settings, Exit
+		Menu, Playing, Credits, Exit
 	};
 
 	static State currentState = State::Menu;
@@ -316,38 +316,58 @@ namespace Game
 				{
 					std::string player1Text = "Player1";
 					int player1TextFont = 30;
-					DrawText(player1Text.c_str(), Externs::screenWidth / 2 - 200 - MeasureText(player1Text.c_str(), player1TextFont) / 2, Externs::screenHeight / 5, player1TextFont, BLACK);
+					DrawText(player1Text.c_str(), Externs::screenWidth / 2 - 200 - MeasureText(player1Text.c_str(), player1TextFont) / 2, Externs::screenHeight / 2-30, player1TextFont, BLACK);
 
 					std::string player2Text = "Player2";
 					int player2TextFont = 30;
-					DrawText(player2Text.c_str(), Externs::screenWidth / 2 + 200 - MeasureText(player2Text.c_str(), player2TextFont) / 2, Externs::screenHeight / 5, player2TextFont, BLACK);
+					DrawText(player2Text.c_str(), Externs::screenWidth / 2 + 200 - MeasureText(player2Text.c_str(), player2TextFont) / 2, Externs::screenHeight / 2-30, player2TextFont, BLACK);
 
 					std::string player1ControlText = "-W to jump";
 					int player1ControlTextFont = 22;
-					DrawText(player1ControlText.c_str(), Externs::screenWidth / 2 - 200 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, Externs::screenHeight / 2 - 50, player1ControlTextFont, BLACK);
+					DrawText(player1ControlText.c_str(), Externs::screenWidth / 2 - 200 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, Externs::screenHeight / 2 +100, player1ControlTextFont, BLACK);
 
 					std::string player2ControlText = "-Up arrow to jump";
 					int player2ControlTextFont = 22;
-					DrawText(player2ControlText.c_str(), Externs::screenWidth / 2 + 200 - MeasureText(player2ControlText.c_str(), player2ControlTextFont) / 2, Externs::screenHeight / 2 - 50, player2ControlTextFont, BLACK);
+					DrawText(player2ControlText.c_str(), Externs::screenWidth / 2 + 200 - MeasureText(player2ControlText.c_str(), player2ControlTextFont) / 2, Externs::screenHeight / 2 + 100 , player2ControlTextFont, BLACK);
 
 					std::string continueText = "Press ENTER to continue";
 					int continueTextFont = 30;
-					DrawText(continueText.c_str(), Externs::screenWidth / 2 - MeasureText(continueText.c_str(), continueTextFont) / 2, Externs::screenHeight / 2 + 150, continueTextFont, BLACK);
+					DrawText(continueText.c_str(), Externs::screenWidth / 2 - MeasureText(continueText.c_str(), continueTextFont) / 2, Externs::screenHeight / 2 + 275, continueTextFont, BLACK);
+
+					std::string rulesText1 = "-Flap your way to the end of an endless magical cave";
+					std::string rulesText2 = "-Avoid hitting rocks or falling off the screen";
+					
+					int rulesText1Font = 30;
+					int rulestText2Font = 30;
+
+					DrawText(rulesText1.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText1.c_str(), rulesText1Font)/2, Externs::screenHeight / 4 - 100, rulesText1Font, BLACK);
+					DrawText(rulesText2.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText2.c_str(), rulestText2Font) / 2, Externs::screenHeight /4 , rulestText2Font, BLACK);
+					
 				}
 				else
 				{
 					std::string player1Text = "Player";
-					int player1TextFont = 30;
-					DrawText(player1Text.c_str(), Externs::screenWidth / 2 - MeasureText(player1Text.c_str(), player1TextFont) / 2, Externs::screenHeight / 5, player1TextFont, BLACK);
+					int player1TextFont = 39;
+					DrawText(player1Text.c_str(), Externs::screenWidth / 2 - MeasureText(player1Text.c_str(), player1TextFont) / 2, Externs::screenHeight / 2 - 50, player1TextFont, BLACK);
 
 					std::string player1ControlText = "-W to jump";
-					int player1ControlTextFont = 22;
-					DrawText(player1ControlText.c_str(), Externs::screenWidth / 2 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, Externs::screenHeight / 2 - 50, player1ControlTextFont, BLACK);
+					int player1ControlTextFont = 28;
+					DrawText(player1ControlText.c_str(), Externs::screenWidth / 2 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, Externs::screenHeight / 2 + 85, player1ControlTextFont, BLACK);
 
 					std::string continueText = "Press ENTER to continue";
 					int continueTextFont = 30;
-					DrawText(continueText.c_str(), Externs::screenWidth / 2 - MeasureText(continueText.c_str(), continueTextFont) / 2, Externs::screenHeight / 2 + 150, continueTextFont, BLACK);
+					DrawText(continueText.c_str(), Externs::screenWidth / 2 - MeasureText(continueText.c_str(), continueTextFont) / 2, Externs::screenHeight / 2 + 250, continueTextFont, BLACK);
+
+					std::string rulesText1 = "-Flap your way to the end of an endless magical cave";
+					std::string rulesText2 = "-Avoid hitting rocks or falling off the screen";
+					
+					int rulesText1Font = 30;
+					int rulestText2Font = 30;
+					
+					DrawText(rulesText1.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText1.c_str(), rulesText1Font) / 2, Externs::screenHeight / 4 - 85, rulesText1Font, BLACK);
+					DrawText(rulesText2.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText2.c_str(), rulestText2Font) / 2, Externs::screenHeight / 4 , rulestText2Font, BLACK);
 				}
+
 				break;
 
 			case Playing::GameplayScene::Playing:
@@ -688,6 +708,7 @@ namespace Game
 				Menu::Credits::Update();
 
 				break;
+
 			default:
 				break;
 			}
@@ -714,6 +735,7 @@ namespace Game
 				Menu::Credits::Draw();
 
 				break;
+
 			default:
 				break;
 			}
