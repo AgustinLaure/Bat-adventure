@@ -5,8 +5,6 @@ namespace Player
 {
 	struct Bird
 	{
-		int textureID;
-
 		Vector2 position;
 
 		float velocity;
@@ -14,6 +12,8 @@ namespace Player
 		bool isOn;
 
 		KeyboardKey moveUpKey;
+
+		//Texture texture;
 	};
 
 	void Initialization(Bird& bird, KeyboardKey moveUpKey, Vector2 pos);

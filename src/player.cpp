@@ -12,8 +12,6 @@ namespace Player
 
 	void Initialization(Bird& bird, KeyboardKey moveUpKey, Vector2 pos)
 	{
-		bird.textureID = 0;
-
 		bird.position = pos;
 
 		bird.velocity = 0.0f;

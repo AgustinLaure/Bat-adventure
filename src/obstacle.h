@@ -5,8 +5,6 @@ namespace Obstacle
 {
 	struct Obstacle
 	{
-		int textureID;
-
 		Vector2 top;
 		Vector2 bottom;
 		
@@ -14,6 +12,10 @@ namespace Obstacle
 
 		float width;
 		float height;
+
+		bool passed;
+
+		//Texture texture;
 	};
 
 	void Initialization(Obstacle& obstacle);

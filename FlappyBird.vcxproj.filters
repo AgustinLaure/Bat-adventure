@@ -17,9 +17,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gameloop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\globals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -38,12 +35,12 @@
     <ClCompile Include="src\player.cpp">
       <Filter>Player</Filter>
     </ClCompile>
+    <ClCompile Include="src\game_loop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gameloop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\utils.h">
@@ -63,6 +60,9 @@
     </ClInclude>
     <ClInclude Include="src\player.h">
       <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game_loop.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

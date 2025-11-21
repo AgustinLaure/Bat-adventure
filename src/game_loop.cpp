@@ -1,4 +1,4 @@
-#include "gameloop.h"
+#include "game_loop.h"
 #include "globals.h"
 #include "player.h"
 #include "obstacle.h"
@@ -79,6 +79,11 @@ namespace Game
 		static Playstyle currentPlaystyle = Playstyle::Singleplayer;
 
 		static GameplayScene currentScene = GameplayScene::ReadingRules;
+		static int score = 0;
+		static float timeAlive = 0.0f;
+
+		bool retry = false;
+		bool hasLost = false;
 
 		static void Update();
 		static void Draw();
@@ -136,6 +141,31 @@ namespace Game
 				break;
 
 			case GameplayScene::Playing:
+
+				timeAlive += Externs::deltaT;
+
+				if (!Objects::obstacle.passed)
+				{
+					if (currentPlaystyle == Playstyle::Singleplayer)
+					{
+						if (Objects::obstacle.bottom.x < Objects::bird1.position.x)
+						{
+							score += 1;
+							Objects::obstacle.passed = true;
+						}
+					}
+					else
+					{
+						if (Objects::obstacle.bottom.x < Objects::bird2.position.x)
+						{
+							score += 1;
+							Objects::obstacle.passed = true;
+						}
+					}
+
+					
+				}
+
 				if (IsKeyPressed(KEY_P))
 				{
 					currentScene = GameplayScene::Pause;
@@ -186,20 +216,20 @@ namespace Game
 					{
 						if (!Objects::bird2.isOn)
 						{
-							Externs::hasLost = true;
+							hasLost = true;
 						}
 					}
 					else
 					{
-						Externs::hasLost = true;
+						hasLost = true;
 					}
 				}
 
-				if (Externs::hasLost)
+				if (hasLost)
 				{
-					Externs::hasLost = false;
 					currentScene = GameplayScene::Finished;
 				}
+
 				break;
 
 			case GameplayScene::Pause:
@@ -212,7 +242,7 @@ namespace Game
 
 					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 					{
-						Externs::retry = true;
+						retry = true;
 						currentScene = GameplayScene::ReadingRules;
 						currentState = State::Menu;
 					}
@@ -247,7 +277,7 @@ namespace Game
 
 					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 					{
-						Externs::retry = true;
+						retry = true;
 						currentScene = GameplayScene::Playing;
 					}
 				}
@@ -263,7 +293,7 @@ namespace Game
 					if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
 					{
 						currentState = State::Menu;
-						Externs::retry = true;
+						retry = true;
 						currentScene = GameplayScene::ReadingRules;
 					}
 				}
@@ -271,21 +301,24 @@ namespace Game
 				{
 					Objects::exitButton.text.color = GRAY;
 				}
-			
+
 				break;
 
 			default:
 				break;
 			}
 
-			if (Externs::retry)
+			if (retry)
 			{
 				Player::Initialization(Playing::Objects::bird1, KEY_W, { static_cast<float>(Externs::screenWidth) / 6.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 				Player::Initialization(Playing::Objects::bird2, KEY_UP, { static_cast<float>(Externs::screenWidth) / 5.0f, static_cast<float>(Externs::screenHeight) / 2.0f });
 				Obstacle::Initialization(Playing::Objects::obstacle);
 				Assets::Parallax::Reset();
+				score = 0;
+				timeAlive = 0.0f;
 
-				Externs::retry = false;
+				retry = false;
+				hasLost = false;
 			}
 		}
 
@@ -295,20 +328,23 @@ namespace Game
 			{
 				Assets::Parallax::Draw();
 
-				if (Objects::bird1.isOn)
-				{
-					Player::Draw(Objects::bird1);
-				}
+
+				Player::Draw(Objects::bird1);
+
 
 				if (currentPlaystyle == Playstyle::Multiplayer)
 				{
-					if (Objects::bird2.isOn)
-					{
-						Player::Draw(Objects::bird2);
-					}
+
+					Player::Draw(Objects::bird2);
+
 				}
 
 				Obstacle::Draw(Objects::obstacle);
+
+				if (!hasLost)
+				{
+					DrawText(TextFormat("%d", (score)), Externs::screenWidth / 2 - MeasureText(TextFormat("%d", (score)), 10), Externs::screenHeight / 7, 35, WHITE);
+				}
 			}
 
 			switch (currentScene)
@@ -320,19 +356,19 @@ namespace Game
 				{
 					std::string player1Text = "Player1";
 					int player1TextFont = 30;
-					DrawText(player1Text.c_str(), Externs::screenWidth / 2 - 200 - MeasureText(player1Text.c_str(), player1TextFont) / 2, Externs::screenHeight / 2-30, player1TextFont, BLACK);
+					DrawText(player1Text.c_str(), Externs::screenWidth / 2 - 200 - MeasureText(player1Text.c_str(), player1TextFont) / 2, Externs::screenHeight / 2 - 30, player1TextFont, BLACK);
 
 					std::string player2Text = "Player2";
 					int player2TextFont = 30;
-					DrawText(player2Text.c_str(), Externs::screenWidth / 2 + 200 - MeasureText(player2Text.c_str(), player2TextFont) / 2, Externs::screenHeight / 2-30, player2TextFont, BLACK);
+					DrawText(player2Text.c_str(), Externs::screenWidth / 2 + 200 - MeasureText(player2Text.c_str(), player2TextFont) / 2, Externs::screenHeight / 2 - 30, player2TextFont, BLACK);
 
 					std::string player1ControlText = "-W to jump";
 					int player1ControlTextFont = 22;
-					DrawText(player1ControlText.c_str(), Externs::screenWidth / 2 - 200 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, Externs::screenHeight / 2 +100, player1ControlTextFont, BLACK);
+					DrawText(player1ControlText.c_str(), Externs::screenWidth / 2 - 200 - MeasureText(player1ControlText.c_str(), player1ControlTextFont) / 2, Externs::screenHeight / 2 + 100, player1ControlTextFont, BLACK);
 
 					std::string player2ControlText = "-Up arrow to jump";
 					int player2ControlTextFont = 22;
-					DrawText(player2ControlText.c_str(), Externs::screenWidth / 2 + 200 - MeasureText(player2ControlText.c_str(), player2ControlTextFont) / 2, Externs::screenHeight / 2 + 100 , player2ControlTextFont, BLACK);
+					DrawText(player2ControlText.c_str(), Externs::screenWidth / 2 + 200 - MeasureText(player2ControlText.c_str(), player2ControlTextFont) / 2, Externs::screenHeight / 2 + 100, player2ControlTextFont, BLACK);
 
 					std::string continueText = "Press ENTER to continue";
 					int continueTextFont = 30;
@@ -340,13 +376,13 @@ namespace Game
 
 					std::string rulesText1 = "-Flap your way to the end of an endless magical cave";
 					std::string rulesText2 = "-Avoid hitting rocks or falling off the screen";
-					
+
 					int rulesText1Font = 30;
 					int rulestText2Font = 30;
 
-					DrawText(rulesText1.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText1.c_str(), rulesText1Font)/2, Externs::screenHeight / 4 - 100, rulesText1Font, BLACK);
-					DrawText(rulesText2.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText2.c_str(), rulestText2Font) / 2, Externs::screenHeight /4 , rulestText2Font, BLACK);
-					
+					DrawText(rulesText1.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText1.c_str(), rulesText1Font) / 2, Externs::screenHeight / 4 - 100, rulesText1Font, BLACK);
+					DrawText(rulesText2.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText2.c_str(), rulestText2Font) / 2, Externs::screenHeight / 4, rulestText2Font, BLACK);
+
 				}
 				else
 				{
@@ -364,12 +400,12 @@ namespace Game
 
 					std::string rulesText1 = "-Flap your way to the end of an endless magical cave";
 					std::string rulesText2 = "-Avoid hitting rocks or falling off the screen";
-					
+
 					int rulesText1Font = 30;
 					int rulestText2Font = 30;
-					
+
 					DrawText(rulesText1.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText1.c_str(), rulesText1Font) / 2, Externs::screenHeight / 4 - 85, rulesText1Font, BLACK);
-					DrawText(rulesText2.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText2.c_str(), rulestText2Font) / 2, Externs::screenHeight / 4 , rulestText2Font, BLACK);
+					DrawText(rulesText2.c_str(), Externs::screenWidth / 2 - MeasureText(rulesText2.c_str(), rulestText2Font) / 2, Externs::screenHeight / 4, rulestText2Font, BLACK);
 				}
 
 				break;
@@ -384,9 +420,11 @@ namespace Game
 				break;
 
 			case Playing::GameplayScene::Finished:
-				DrawText("YOU LOST!", Externs::screenWidth / 2 - MeasureText("YOU LOST!", 60) / 2, Externs::screenHeight / 2 - 100, 60, WHITE);
+				DrawText("YOU LOST!", Externs::screenWidth / 2 - MeasureText("YOU LOST!", 60) / 2, Externs::screenHeight / 2 - 200, 60, WHITE);
 				Buttons::Draw(Objects::retryButton);
 				Buttons::Draw(Objects::exitButton);
+				DrawText(TextFormat("Score: %d", (score)), Externs::screenWidth / 2 - MeasureText(TextFormat("Score: %d", (score)), 10), Externs::screenHeight / 2, 20, WHITE);
+				DrawText(TextFormat("Seconds alive: %d", static_cast<int>(timeAlive)), Externs::screenWidth / 2 - MeasureText(TextFormat("Seconds alive: %d", static_cast<int>(timeAlive)), 10), Externs::screenHeight / 2 + 35, 20, WHITE);
 				break;
 
 			default:
@@ -752,7 +790,7 @@ namespace Game
 		}
 
 		UnloadTextures();
-	
+
 		CloseWindow();
 	}
 }

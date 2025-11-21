@@ -15,8 +15,6 @@ namespace Buttons
 
 		Color color = WHITE;
 
-		int currentTextureID = 0;
-
 		bool isMuted = false;
 	};
 	void Initialize(Button& button, float width, float height, float posX, float posY);

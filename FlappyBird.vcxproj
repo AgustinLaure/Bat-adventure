@@ -156,7 +156,7 @@
   <ItemGroup>
     <ClCompile Include="src\button.cpp" />
     <ClCompile Include="src\draw.cpp" />
-    <ClCompile Include="src\gameloop.cpp" />
+    <ClCompile Include="src\game_loop.cpp" />
     <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\obstacle.cpp" />
@@ -166,7 +166,7 @@
   <ItemGroup>
     <ClInclude Include="src\button.h" />
     <ClInclude Include="src\draw.h" />
-    <ClInclude Include="src\gameloop.h" />
+    <ClInclude Include="src\game_loop.h" />
     <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\obstacle.h" />
     <ClInclude Include="src\player.h" />

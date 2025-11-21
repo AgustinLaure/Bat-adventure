@@ -12,8 +12,6 @@ namespace Obstacle
 
 	void Initialization(Obstacle& obstacle)
 	{
-		obstacle.textureID = 0;
-
 		obstacle.width = 50.0f;
 		obstacle.height = 700.0f;
 
@@ -24,6 +22,8 @@ namespace Obstacle
 		obstacle.top = { obstacle.bottom.x, gap.y + obstacleSpace };
 
 		obstacle.velocity = Variables::velocity;
+
+		obstacle.passed = false;
 	}
 
 	void Update(Obstacle& obstacle)
@@ -38,6 +38,7 @@ namespace Obstacle
 			Vector2 gap = { static_cast<float>(Externs::screenWidth) , static_cast<float>(GetRandomValue(static_cast<int>(offset), static_cast<int>(Externs::screenHeight - offset - obstacleSpace))) };
 			obstacle.bottom = { static_cast<float>(Externs::screenWidth), gap.y - obstacle.height };
 			obstacle.top = { obstacle.bottom.x, gap.y + obstacleSpace };
+			obstacle.passed = false;
 		}
 	}
 
