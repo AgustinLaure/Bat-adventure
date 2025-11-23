@@ -1,16 +1,16 @@
 --Bat Adventure
 #
 #
-Its a casual 2D game inspired by the classic flappy bird made in C++ using Raylib library. You play as a bat whose objective is to escape from an endless magic cave wheres its been trapped.
+Bat Adventure is a casual 2D game inspired by the classic flappy bird, made in C++ using the Raylib library. You play as a bat trying to to escape from an endless magic cave wheres it has been trapped.
 #
-Its gameplay is one of an endless runner where the objective is to dodge as many obstacles as you can by flapping. You can play by yourself or with a friend in a multiplayer local mode. 
+The gameplay is similiar to an endless runner, where the objective is to dodge as many obstacles as you can by flapping your wings. You can play solo or with a friend in a local multiplayer  mode. 
 #
 #
 --Controls
 #
-W: To Flap as Player 1
+W: To Flap (Player 19
 #
-Up arrow: Flap as Player 2
+Up arrow: Flap (Player 2)
 #
 Left click: Select
 #
@@ -21,7 +21,7 @@ ESC: Close game
 #
 --Assets
 #
-The game was made using assets from different creators, links below:
+The game was made using assets from different creators (links below):
 
 [kashdanmusic]([https://tallbeard.itch.io/three-red-hearts-prepare-to-dev](https://kashdanmusic.itch.io/underground-realms2))
 
@@ -36,7 +36,9 @@ The game was made using assets from different creators, links below:
 #
 --How to run
 
-Download "BatAdventure.zip" and run "BatAdventure.exe"
+Download "BatAdventure.zip".
+#
+Run "BatAdventure.exe".
 #
 Enjoy
 
